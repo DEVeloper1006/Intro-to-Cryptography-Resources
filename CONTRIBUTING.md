@@ -65,7 +65,7 @@ git push origin feature/your-branch-name
    - Only add materials directly related to the course content (e.g., cryptographic algorithms, notes, examples).
 
 2. **Follow the Directory Structure**:
-   - Place your files in the correct folder (e.g., code in `/code`, notes in `/notes`).
+   - Place your files in the correct folder (e.g., code in `/code`, notes in `/textbook-notes`).
 
 3. **Write Clear Documentation**:
    - If you add code, include comments explaining the logic.
