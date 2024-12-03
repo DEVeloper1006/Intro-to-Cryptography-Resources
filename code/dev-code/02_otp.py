@@ -1,3 +1,7 @@
+#Author: Dev Mody
+#Date: December 3rd 2024
+#Description: Uses os.urandom to construct a similar size TRNG-produced key to the plaintext and ciphertext to perform bitwise XORs to encrypt and decrypt
+
 import os
 
 class OneTimePad:

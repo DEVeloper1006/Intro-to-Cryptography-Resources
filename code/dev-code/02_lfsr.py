@@ -1,3 +1,7 @@
+#Author: Dev Mody
+#Date: December 3rd, 2024
+#Description: This code implements the General LFSR from the Textbook and performs a Known-Plaintext Attack given known plaintext, degree and keystream
+
 import numpy as np
 
 class StreamCipherLFSR:
