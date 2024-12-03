@@ -1,3 +1,7 @@
+#Author: Dev Mody
+#Date: December 3rd 2024
+#Description: This code implements the DES algorithm exactly as mentioned in the textbook
+
 PC1 = [
     57, 49, 41, 33, 25, 17,  9,
      1, 58, 50, 42, 34, 26, 18,
