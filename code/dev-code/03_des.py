@@ -197,9 +197,13 @@ class DES:
         return round_keys
     
     def encrypt(self, plaintext):
+        if len(plaintext) < 64:
+            raise ValueError("Not correct number of bits")
         return self._des_full(plaintext, self.round_keys, S_BOXES, P)
     
     def decrypt(self, ciphertext):
+        if len(ciphertext) < 64:
+            raise ValueError("Not correct number of bits")
         return self._des_full(ciphertext, self.round_keys[::-1], S_BOXES, P)
 
 example_key = [
