@@ -1,3 +1,7 @@
+#Author: Dev Mody
+#Date: December 4th 2024
+#Description: Uses Euler's Phi Function and EEA
+
 import sympy
 
 class ModularInverse:

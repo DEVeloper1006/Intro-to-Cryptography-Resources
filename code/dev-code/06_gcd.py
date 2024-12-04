@@ -1,3 +1,7 @@
+#Author: Dev Mody
+#Date: December 4th 2024
+#Description: Performs GCD via EA and EEA
+
 def euclid_gcd (a : int, b : int):
     while b != 0:
         a, b = b, a % b
