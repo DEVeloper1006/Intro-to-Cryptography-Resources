@@ -1,5 +1,3 @@
-import random
-
 S_BOX = [
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
     0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -38,11 +36,7 @@ INVERSE_S_BOX = [
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 ]
 
-Rcon = [0x00000000, 0x01000000, 0x02000000,
-		0x04000000, 0x08000000, 0x10000000, 
-		0x20000000, 0x40000000, 0x80000000, 
-		0x1b000000, 0x36000000]
-
+Rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36]
 class AES:
     
     def __init__ (self, key):
@@ -51,8 +45,8 @@ class AES:
             raise ValueError("Key must be 16, 24 or 32 bytes long")
         self.key = key
         self.key_size = len(key)
-        self.round_keys = self._key_expansion()
-        
+        self.round_keys = self._organize_key(self._key_expansion())
+    
     def _galois_mult(self, a, b):
         sum = 0;
         while (b > 0):
@@ -66,35 +60,27 @@ class AES:
     
     def _sub_bytes(self, state, inverse=False):
         s_box = INVERSE_S_BOX if inverse else S_BOX
-        results = []
         for i in range(len(state)):
-            results.append([])
             for j in range(len(state[i])):
-                results[i].append(s_box[state[i][j]])
-        return results
+                state[i][j] = s_box[state[i][j]]
+        return state
     
     def _shift_rows(self, state, inverse=False):
-        # Row 0: No shift
-        if inverse:
-            # Inverse shift (shift left)
-            state[1] = state[1][:1] + state[1][1:]  # Shift row 1 by 3 to the left
-            state[2] = state[2][:2] + state[2][2:]  # Shift row 2 by 2 to the left
-            state[3] = state[3][:3] + state[3][3:]  # Shift row 3 by 1 to the left
-        else:
-            # Normal shift (shift right)
-            state[1] = state[1][-3:] + state[1][:-3]  # Shift row 1 by 3 to the right
-            state[2] = state[2][-2:] + state[2][:-2]  # Shift row 2 by 2 to the right
-            state[3] = state[3][-1:] + state[3][:-1]  # Shift row 3 by 1 to the right
+        shifts = [0, 3, 2, 1]
+        for i in range(len(state)):
+            shift = shifts[i] if not inverse else -shifts[i]
+            
+            state[i] = state[i][-shift % 4:] + state[i][:-shift % 4]
         
         return state
     
     def _mix_columns(self, state, inverse=False):
         if inverse:
             mix_matrix = [
-                [14, 9, 13, 11],
-                [11, 14, 9, 13],
-                [13, 11, 14, 9],
-                [9, 13, 11, 14],
+                [14, 11, 13, 9],
+                [9, 14, 11, 13],
+                [13, 9, 14, 11],
+                [11, 13, 9, 14],
             ]
         else:
             mix_matrix = [
@@ -103,71 +89,83 @@ class AES:
                 [1, 1, 2, 3],
                 [3, 1, 1, 2],
             ]
+        # Initialize result as a 4x4 matrix
         result = [[0] * 4 for _ in range(4)]
-        for c in range(4):  # For each column
-            for r in range(4):  # For each row
+    
+        # Perform the mix operation column by column
+        for c in range(4):
+            for r in range(4):
+                # Calculate new value for each element in the column
                 result[r][c] = sum(self._galois_mult(state[i][c], mix_matrix[r][i]) for i in range(4)) & 0xFF
         return result
     
     def _add_round_key(self, state, round_key):
-        for i in range(4):
-            for j in range(4):
-                state[i][j] ^= round_key[i][j]
+        for i in range(len(state)):
+            for j in range(len(state[i])):
+                state[i][j] ^= round_key[i][j] & 0xFF
         return state
     
     def _key_expansion(self):
-        key_size = len(self.key)  # Key size in bytes (128, 192, or 256 bits)
-        round_keys = [self.key]
+        key_size = len(self.key)  # Key size in bytes (16, 24, or 32 bytes)
         num_rounds = 10 if key_size == 16 else 12 if key_size == 24 else 14
+        num_words = key_size // 4  # Words in the original key
 
-        for round in range(1, num_rounds + 1):
-            temp = round_keys[-1][-4:]  # Last word of the previous round key
-            temp = self.sub_word(self.rotate_word(temp))  # Apply SubWord and Rotate
-            temp[0] ^= Rcon[round - 1]  # Apply Rcon to the first byte
-            round_keys.append([round_keys[-1][i] ^ temp[i] for i in range(4)])
+        # Initialize the round keys with the original key
+        round_keys = [self.key[i:i+4] for i in range(0, len(self.key), 4)]
 
-            for i in range(1, 4):
-                round_keys.append([round_keys[-1][i] ^ round_keys[-2][i] for i in range(4)])
+        for i in range(num_words, (num_rounds + 1) * 4):
+            temp = round_keys[-1]  # Last word of the current key schedule
+            if i % num_words == 0:
+                temp = self._sub_word(self._rotate_word(temp))
+                temp[0] ^= Rcon[i // num_words - 1]
+            elif key_size == 32 and i % num_words == 4:
+                temp = self._sub_word(temp)
+            round_keys.append([
+                (round_keys[i - num_words][j] ^ temp[j]) & 0xFF for j in range(4)
+            ])
 
         return round_keys
+    
+    def _organize_key (self, expanded_keys):
+        rounds = len(expanded_keys) // 4  # Number of rounds
+        keys = [expanded_keys[i * 4: (i + 1) * 4] for i in range(rounds)]
+        return keys
 
-    def sub_word(self, word):
+    def _sub_word(self, word):
         result = []
         for b in word:
-            result.append(S_BOX[b])
+            result.append(S_BOX[b & 0xFF])  # Ensure b is within 0-255
         return result
 
-    def rotate_word(self, word):
+    def _rotate_word(self, word):
         return word[1:] + [word[0]]
-
-    def xor_words(self, word1, word2):
-        return [a ^ b for a, b in zip(word1, word2)]
-        
+    
     def encrypt_block(self, plaintext):
-        state = [plaintext[i:i + 4] for i in range(0, 16, 4)]
+        state = [plaintext[i:i + 4] for i in range(0, len(plaintext), 4)]
+        
         state = self._add_round_key(state, self.round_keys[0])
 
         # Rounds 1 to Nr-1
         for i in range(1, len(self.round_keys) - 1):
             state = self._sub_bytes(state)
             state = self._shift_rows(state)
-            state = self._mix_columns(state)  # Only in rounds 1 to Nr-1
+            state = self._mix_columns(state)
             state = self._add_round_key(state, self.round_keys[i])
 
         # Final round
         state = self._sub_bytes(state)
         state = self._shift_rows(state)
-        state = self._add_round_key(state, self.round_keys[-1])  # No MixColumns here
+        state = self._add_round_key(state, self.round_keys[-1])
 
         result = []
         for i in range(len(state)):
             for j in range(len(state[i])):
                 result.append(state[i][j])
-        
+
         return result
     
     def decrypt_block (self, ciphertext):
-        state = [ciphertext[i:i + 4] for i in range(0, 16, 4)]
+        state = [ciphertext[i:i + 4] for i in range(0, len(ciphertext), 4)]
         state = self._add_round_key(state, self.round_keys[-1])
 
         for i in range(len(self.round_keys) - 2, 0, -1):
@@ -189,8 +187,6 @@ plaintext = [
     0xe0, 0x37, 0x07, 0x34
 ]  # Example plaintext (16 bytes)
 
-print(plaintext)
-
 key = [
     0x2b, 0x7e, 0x15, 0x16,
     0x28, 0xae, 0xd2, 0xa6,
@@ -207,5 +203,9 @@ expected_ciphertext = [
 
 aes = AES(key)
 ciphertext = aes.encrypt_block(plaintext)
-assert ciphertext == expected_ciphertext, f"Test Case 1 Failed: {ciphertext}"
+print([hex(thing) for thing in expected_ciphertext])
+assert ciphertext == expected_ciphertext, f"Test Case 1 Failed: {[hex(thing) for thing in ciphertext]}"
 print("Test Case 1 Passed!")
+
+plaintext = aes.decrypt_block(expected_ciphertext)
+print([hex(thing) for thing in plaintext])
