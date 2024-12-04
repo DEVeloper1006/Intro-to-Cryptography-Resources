@@ -13,9 +13,8 @@ class ModularInverse:
         if sympy.isprime(self.m):
             phi_m = self.m - 1 #assuming m is prime
             inverse_b = pow(a, phi_m - 1, self.m)
-
             return inverse_b
-        return None
+        return self.eea_mod_inverse()
     
     def eea_mod_inverse (self):
         s0, s1 = 1, 0
