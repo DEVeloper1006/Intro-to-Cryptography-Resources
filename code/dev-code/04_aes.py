@@ -116,26 +116,28 @@ class AES:
         return state
     
     def _key_expansion(self):
-        self.round_keys = [self.key]
-        key_schedule = self.key
-        for round in range(1, 11):  # Assuming AES-128, 10 rounds
-            temp = self.round_keys[round - 1][-4:]
-            temp = self.sub_bytes(self.rotate(temp))
-            temp = self.xor_words(temp, Rcon[round])
-            key_schedule += temp
-            for i in range(4, 4 * round + 4):
-                if i % 4 == 0:
-                    temp = self.sub_bytes(temp)
-                    key_schedule += self.xor_words(temp, self.round_keys[round - 1][i-4])
-                else:
-                    key_schedule += self.xor_words(temp, self.round_keys[round - 1][i-4])
+        key_size = len(self.key)  # Key size in bytes (128, 192, or 256 bits)
+        round_keys = [self.key]
+        num_rounds = 10 if key_size == 16 else 12 if key_size == 24 else 14
 
-        self.round_keys = [key_schedule[i:i+16] for i in range(0, len(key_schedule), 16)]
+        for round in range(1, num_rounds + 1):
+            temp = round_keys[-1][-4:]  # Last word of the previous round key
+            temp = self.sub_word(self.rotate_word(temp))  # Apply SubWord and Rotate
+            temp[0] ^= Rcon[round - 1]  # Apply Rcon to the first byte
+            round_keys.append([round_keys[-1][i] ^ temp[i] for i in range(4)])
 
-    def sub_bytes(self, word):
-        return [S_BOX[b] for b in word]
+            for i in range(1, 4):
+                round_keys.append([round_keys[-1][i] ^ round_keys[-2][i] for i in range(4)])
 
-    def rotate(self, word):
+        return round_keys
+
+    def sub_word(self, word):
+        result = []
+        for b in word:
+            result.append(S_BOX[b])
+        return result
+
+    def rotate_word(self, word):
         return word[1:] + [word[0]]
 
     def xor_words(self, word1, word2):
