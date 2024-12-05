@@ -109,7 +109,7 @@ class DiffieHellman:
             raise ValueError("Numbers not in group")
         return pow(num1, private, self.prime)
         
-class ElgamalEncryption:
+class NaiveElgamalEncryption:
     
     def __init__ (self, prime):
         self.private1 = None
@@ -162,6 +162,59 @@ class ElgamalEncryption:
         else:
             return self.diffie_hellman.group.derive_new_element(ciphertext, self.diffie_hellman.group.find_inverse(self.shared_key2))
         
+class ElgamalEncryption:
+    
+    def __init__ (self, prime):
+        self.private1 = None
+        self.private2 = None
+        self.public1 = None
+        self.public2 = None
+        self.shared_key1 = None
+        self.shared_key2 = None
+        if not sympy.isprime(prime):
+            self.prime = 5
+            self.group = PrimeCyclicGroupMult(self.prime)
+        else:
+            self.group = PrimeCyclicGroupMult(prime)
+            self.prime = prime
+        self.alpha = random.choice(self.group.primitives)
+    
+    def set_private_key(self, value, person1=True):
+        if value not in self.diffie_hellman.group.elements:
+            raise ValueError("Number not in group")
+        if person1:
+            self.private1 = value
+        else:
+            self.private2 = value
+            
+    def set_public_key(self, person1=True):
+        if self.private1 is None or self.private2 is None:
+            raise ValueError("Private Keys Not Set")
+        if person1:
+            self.public1 = pow(self.alpha, self.private1, self.prime)
+        else:
+            self.public2 = pow(self.alpha, self.private2, self.prime)
+            
+    def encrypt (self, plaintext, person1=True):
+        if self.public1 is None or self.public2 is None:
+            raise ValueError("Public Keys Not Set")
+        if plaintext not in self.group.primitives:
+            raise ValueError("Plaintext not in group")
+        if person1:
+            return self.group.derive_new_element(plaintext, pow(self.public2, self.private1, self.prime))
+        else:
+            return self.group.derive_new_element(plaintext, pow(self.public1, self.private2, self.prime))
+        
+    def decrypt (self, ciphertext, person1=True):
+        if self.public1 is None or self.public2 is None:
+            raise ValueError("Public Keys Not Set")
+        if ciphertext not in self.group.primitives:
+            raise ValueError("Plaintext not in group")
+        if person1:
+            return self.group.derive_new_element(ciphertext, self.group.find_inverse(self.public2))
+        else:
+            return self.group.derive_new_element(ciphertext, self.group.find_inverse(self.public1))
+        
 # Testing Group Theory:
 # Test: Order of elements
 group = PrimeCyclicGroupMult(11)
@@ -202,7 +255,7 @@ print("Shared Key 2:", shared_key2)  # Expected: Same as Shared Key 1
 
 #Testing Elgamal Encryption and Decryption:
 # Test: Elgamal Encryption and Decryption
-elgamal = ElgamalEncryption(11)
+elgamal = NaiveElgamalEncryption(11)
 
 # Set private keys
 elgamal.set_private_key(3, person1=True)
