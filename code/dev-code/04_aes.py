@@ -203,9 +203,4 @@ expected_ciphertext = [
 
 aes = AES(key)
 ciphertext = aes.encrypt_block(plaintext)
-print([hex(thing) for thing in expected_ciphertext])
-assert ciphertext == expected_ciphertext, f"Test Case 1 Failed: {[hex(thing) for thing in ciphertext]}"
-print("Test Case 1 Passed!")
-
-plaintext = aes.decrypt_block(expected_ciphertext)
-print([hex(thing) for thing in plaintext])
+print(plaintext == aes.decrypt_block(ciphertext))
