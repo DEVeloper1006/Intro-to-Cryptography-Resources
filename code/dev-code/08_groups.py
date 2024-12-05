@@ -55,9 +55,15 @@ class PrimeCyclicGroupMult:
             
     def is_generator (self, a):
         return a in self.primitives
+    
+    def derive_new_element (self, a, b):
+        if a not in self.elements or b not in self.elements:
+            raise ValueError("Elements not in group")
+        return (a * b) % self.n
         
-group = PrimeCyclicGroupMult(67)
+group = PrimeCyclicGroupMult(11)
 print("Order:", group.orders)
 print("All Generators:", group.primitives)  # Output: [2, 6, 7, 8]
 print("All Subgroups:", group.subgroups)
 print(group.is_generator(2))
+print(group.derive_new_element(2, 9))
