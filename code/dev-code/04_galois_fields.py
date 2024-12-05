@@ -1,3 +1,9 @@
+# Author: Dev Mody
+# Date: December 4th, 2024
+# Description: Implements Galois Extension Fields
+
+import numpy as np
+
 class GaloisField:
     def __init__(self, field_size, irreducible_poly):
         self.field_size = 2 ^ field_size

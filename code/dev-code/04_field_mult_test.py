@@ -1,3 +1,6 @@
+# Author: Dev Mody
+# Date: December 4th, 2024
+# Description: Trying to work out a way to implement Galois Extension Field Multiplication, Modular Inverse, ...
 import numpy as np
 
 def number_to_bin_arr (num):

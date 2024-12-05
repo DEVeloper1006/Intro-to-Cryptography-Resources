@@ -1,3 +1,7 @@
+# Author: Dev Mody
+# Date: December 4th 2024
+# Description: Implements Prime Fields
+
 import sympy
 
 class ModularInverse:
