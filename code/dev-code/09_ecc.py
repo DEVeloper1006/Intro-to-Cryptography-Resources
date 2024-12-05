@@ -1,5 +1,6 @@
 #Author: Dev Mody
-
+#Date: December 5th, 2024
+#Description: Implements Elliptic Curves, the Diffie-Hellman Key Exchange in EC, and ECDSA
 
 import sympy
 import random
@@ -161,6 +162,7 @@ P = (0, 6)
 k = 3
 print(f"{k} * {P} = {curve.point_multiplication(P, k)}")
 
+#Testing ECDHKE
 prime = 17
 a = 2
 b = 2
@@ -184,10 +186,3 @@ bob_shared_key = dh.create_shared_key(alice_public, bob_private)
 assert alice_shared_key == bob_shared_key, f"Test failed! Alice's shared key: {alice_shared_key}, Bob's shared key: {bob_shared_key}"
 
 print("Test passed! Diffie-Hellman key exchange works correctly.")
-
-                    
-            
-        
-    
-    
-        
