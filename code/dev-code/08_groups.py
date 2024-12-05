@@ -60,6 +60,15 @@ class PrimeCyclicGroupMult:
         if a not in self.elements or b not in self.elements:
             raise ValueError("Elements not in group")
         return (a * b) % self.n
+    
+    def discrete_log_problem (self, generator, constant):
+        if generator not in self.primitives or constant not in self.elements:
+            raise ValueError("Elements not in group")
+        result = generator
+        count = 1
+        while (pow(result, count, self.n) != constant):
+            count += 1
+        return count
         
 group = PrimeCyclicGroupMult(11)
 print("Order:", group.orders)
@@ -67,3 +76,4 @@ print("All Generators:", group.primitives)  # Output: [2, 6, 7, 8]
 print("All Subgroups:", group.subgroups)
 print(group.is_generator(2))
 print(group.derive_new_element(2, 9))
+print(group.discrete_log_problem(2, 9))
