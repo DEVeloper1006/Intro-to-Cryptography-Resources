@@ -211,9 +211,9 @@ class ElgamalEncryption:
         if ciphertext not in self.group.primitives:
             raise ValueError("Plaintext not in group")
         if person1:
-            return self.group.derive_new_element(ciphertext, self.group.find_inverse(self.public2))
+            return self.group.derive_new_element(ciphertext, pow(self.public2, self.prime - self.private1 - 1, self.prime))
         else:
-            return self.group.derive_new_element(ciphertext, self.group.find_inverse(self.public1))
+            return self.group.derive_new_element(ciphertext, pow(self.public1, self.prime - self.private2 - 1, self.prime))
         
 # Testing Group Theory:
 # Test: Order of elements
