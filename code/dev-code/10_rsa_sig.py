@@ -78,25 +78,32 @@ class RSASigScheme:
         return result
     
     def sign(self, message):
-        d, n = self.private_key
+        d, _ = self.private_key
         # Sign the message: s = m^d mod n
-        return self._square_and_multiply(message, d)
+        return pow(message, d, self.n)
+
     
     def verify(self, message, signature):
         e, n = self.public_key
         # Verify the signature: m = s^e mod n
-        return message == self._square_and_multiply(signature, e)
-
+        return pow(signature, e, n) == message
+    
 # Example usage:
 rsa = RSASigScheme(bit_length=512)
+rsa.public_key = (493, 205)
 
-# Message to sign
-message = 42
+list_of_messaged = [(32, 16), (6, 415), (53, 83), (112, 45)]
 
-# Sign the message
-signature = rsa.sign(message)
-print(f"Signature: {signature}")
+for message in list_of_messaged:
+    print(message, rsa.verify(message[0], message[1]))
 
-# Verify the signature
-is_valid = rsa.verify(message, signature)
-print(f"Signature valid: {is_valid}")
+# # Message to sign
+# message = 42
+
+# # Sign the message
+# signature = rsa.sign(message)
+# print(f"Signature: {signature}")
+
+# # Verify the signature
+# is_valid = rsa.verify(message, signature)
+# print(f"Signature valid: {is_valid}")
