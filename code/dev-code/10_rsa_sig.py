@@ -1,7 +1,10 @@
+# Author: Dev Mody
+# Date: December 5th 2024
+# Description: Implements RSA Signature Scheme
+
 import random
 import sympy
 from math import gcd
-from hashlib import sha256
 
 class ModularInverse:
     
@@ -10,6 +13,7 @@ class ModularInverse:
         self.m = m
     
     def euler_mod_inverse(self):
+        # If m is prime, we can use Fermat's little theorem to find the inverse.
         if sympy.isprime(self.m):
             phi_m = self.m - 1  # Assuming m is prime
             inverse_b = pow(self.a, phi_m - 1, self.m)
@@ -31,7 +35,9 @@ class ModularInverse:
             return None  # No inverse exists
         else:
             return s0 % self.m
-class BasicRSA:
+
+
+class RSASigScheme:
     
     def __init__(self, bit_length=2048):
         self.bit_length = bit_length
@@ -71,26 +77,26 @@ class BasicRSA:
                 result = (result * x) % self.n
         return result
     
-    def encrypt(self, x):
-        e, _ = self.public_key
-        # RSA Encryption: c = m^e mod n
-        return self._square_and_multiply(x, e)
+    def sign(self, message):
+        d, n = self.private_key
+        # Sign the message: s = m^d mod n
+        return self._square_and_multiply(message, d)
     
-    def decrypt(self, y):
-        d, _ = self.private_key
-        # RSA Decryption: m = c^d mod n
-        return self._square_and_multiply(y, d)
+    def verify(self, message, signature):
+        e, n = self.public_key
+        # Verify the signature: m = s^e mod n
+        return message == self._square_and_multiply(signature, e)
 
 # Example usage:
-rsa = BasicRSA(bit_length=512)
+rsa = RSASigScheme(bit_length=512)
 
-# Message to encrypt
+# Message to sign
 message = 42
 
-# Encrypt the message
-ciphertext = rsa.encrypt(message)
-print(f"Ciphertext: {ciphertext}")
+# Sign the message
+signature = rsa.sign(message)
+print(f"Signature: {signature}")
 
-# Decrypt the ciphertext
-decrypted_message = rsa.decrypt(ciphertext)
-print(f"Decrypted Message: {decrypted_message}")
+# Verify the signature
+is_valid = rsa.verify(message, signature)
+print(f"Signature valid: {is_valid}")
