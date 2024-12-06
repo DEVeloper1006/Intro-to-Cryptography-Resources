@@ -90,20 +90,14 @@ class RSASigScheme:
     
 # Example usage:
 rsa = RSASigScheme(bit_length=512)
-rsa.public_key = (493, 205)
 
-list_of_messaged = [(32, 16), (6, 415), (53, 83), (112, 45)]
+# Message to sign
+message = 42
 
-for message in list_of_messaged:
-    print(message, rsa.verify(message[0], message[1]))
+# Sign the message
+signature = rsa.sign(message)
+print(f"Signature: {signature}")
 
-# # Message to sign
-# message = 42
-
-# # Sign the message
-# signature = rsa.sign(message)
-# print(f"Signature: {signature}")
-
-# # Verify the signature
-# is_valid = rsa.verify(message, signature)
-# print(f"Signature valid: {is_valid}")
+# Verify the signature
+is_valid = rsa.verify(message, signature)
+print(f"Signature valid: {is_valid}")
