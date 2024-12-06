@@ -42,7 +42,7 @@ def generate_dsa_primes():
     lower_bound_p = 2**2047
     upper_bound_p = 2**2048 - 1
 
-    for i in range(4096):
+    for _ in range(4096):
         # Step 1: Find a 224-bit prime q
         q = generate_large_prime(lower_bound_q, upper_bound_q)
 
