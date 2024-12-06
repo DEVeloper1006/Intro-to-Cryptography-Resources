@@ -54,7 +54,7 @@ class EllipticCurveGroup:
         (x1, y1) = point1
         (x2, y2) = point2
         #s = ((y2 - y1) // (x2 - x1)) % self.prime
-        s = ((y2 - y1) * pow (x2 - x1, -1, self.prime)) % self.prime
+        s = ((y2 - y1) * sympy.mod_inverse(x2-x1, self.prime)) % self.prime
         x3 = (s ** 2 - x1 - x2) % self.prime
         y3 = (s * (x1 - x3) - y1) % self.prime
         return (x3, y3)
@@ -68,8 +68,11 @@ class EllipticCurveGroup:
             return self.neutral
         
         (x1, y1) = point
+        
+        if y1 == 0:
+            return self.neutral
         #s = ((3 * x1**2 + self.a) // (2 * y1)) % self.prime
-        s = ((3 * x1 ** 2 + self.a) * pow (2 * y1, -1, self.prime)) % self.prime
+        s = ((3 * x1 ** 2 + self.a) * sympy.mod_inverse(2 * y1, self.prime)) % self.prime
         x3 = (s ** 2 - 2 * x1) % self.prime
         y3 = (s * (x1 - x3) - y1) % self.prime
         return (x3, y3)
@@ -102,10 +105,10 @@ class EllipticCurveGroup:
                 result = self.point_adding(result, point)
         return result
     
-    def _find_orders (self):
+    def _find_orders(self):
         orders = {}
         for point in self.points:
-            count = 1
+            count = 0
             current = point
             while current != self.neutral:
                 count += 1
@@ -116,7 +119,7 @@ class EllipticCurveGroup:
     def _find_primitives (self):
         primitives = []
         for point in self.points:
-            if self.orders[point] == self.num_points:
+            if self.orders[point] + 1 == self.num_points:
                 primitives.append(point)
         return primitives
     
@@ -247,3 +250,8 @@ print(f"Generated signature: {signature}")
 # Verify the signature
 is_valid = ecdsa.signature_verification(signature)
 print(f"Signature valid: {is_valid}")
+
+curve = EllipticCurveGroup(11, 1, 2)
+print(curve.orders)
+print(curve.primitives)
+print(curve.num_points)
