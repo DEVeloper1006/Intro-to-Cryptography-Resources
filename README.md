@@ -46,6 +46,9 @@ COMPSCI4CR3-OpenBook-Resources/
 │
 ├── /code/           # Code files for cryptographic algorithms
 ├── /textbook-notes/ # Notes and summaries
+├── /textbook-questions/
+├── /practice-exam/
+├── /assignments/    # assignment and solutions
 ├── CONTRIBUTING.md  # Guidelines for contributing
 └── README.md        # This file
 ```
