@@ -1,6 +1,7 @@
 import random
 import sympy
 from math import gcd
+from hashlib import sha256
 
 class ModularInverse:
     
@@ -30,8 +31,6 @@ class ModularInverse:
             return None  # No inverse exists
         else:
             return s0 % self.m
-
-
 class BasicRSA:
     
     def __init__(self, bit_length=2048):
@@ -81,7 +80,6 @@ class BasicRSA:
         d, _ = self.private_key
         # RSA Decryption: m = c^d mod n
         return self._square_and_multiply(y, d)
-
 
 # Example usage:
 rsa = BasicRSA(bit_length=512)

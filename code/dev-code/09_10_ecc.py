@@ -5,6 +5,7 @@
 import sympy
 import random
 import math
+from hashlib import sha256
 
 class EllipticCurveGroup:
     
@@ -151,17 +152,9 @@ class EllipticCurveDiffieHellman:
     
 class EllipticCurveDSA:
     
-    def __init__(self, p, q):
+    def __init__(self, p, q, a, b):
         
-        group = None
-        a = b = 0
-        while True:
-            a = random.randint(1, p - 1)
-            b = random.randint(1, p - 1)
-            group = EllipticCurveGroup(p, a, b)
-            if group.num_points == q:
-                break
-        self.group = group
+        self.group = EllipticCurveGroup(p, a, b)
         p = p
         q = q
         A = random.choice(self.group.primitives)
@@ -171,12 +164,32 @@ class EllipticCurveDSA:
         self.private = d
         self.numbers = range(1, q)
         
+    def _hash_number (self, number):
+        number_bytes = str(number).encode('utf-8')
+        sha256_hash = sha256()
+        sha256_hash.update(number_bytes)
+        return sha256_hash.hexdigest()
+    
     def signature_generation (self, x):
         ephemeral = random.randint(0, self.public[3])
         R = self.group.point_multiplication(self.public[4], ephemeral)
+        r = R[0]
+        h_x = self._hash_number(x)
+        ephemeral_inv = self.group.inverse_point(ephemeral)
+        s = ((h_x + self.private * r) * ephemeral_inv) % self.public[3]
+        return (h_x, (r, s))
+        
+    def signature_verification (self, encrypted):
+        h_x, (r, s) = encrypted
+        s_inv = self.group.inverse_point(s)
+        w = s_inv % self.public[3]
+        u1 = (h_x * w) % self.public[3]
+        u2 = (r * w) % self.public[3]
+        point1 = self.group.point_adding(self.group.point_multiplication(self.public[4], u1), self.group.point_multiplication(self.public[5], u2))
+        return point1[0] % self.public[3] == r
         
 #Tests EC Group
-curve = EllipticCurveGroup(18, 2, 2)
+curve = EllipticCurveGroup(17, 2, 2)
 print("Points on curve:", curve.points)
 print("Neutral element:", curve.neutral)
 print("Orders of points:", curve.orders)
@@ -212,3 +225,25 @@ bob_shared_key = dh.create_shared_key(alice_public, bob_private)
 assert alice_shared_key == bob_shared_key, f"Test failed! Alice's shared key: {alice_shared_key}, Bob's shared key: {bob_shared_key}"
 
 print("Test passed! Diffie-Hellman key exchange works correctly.")
+
+ecdsa = EllipticCurveDSA(23, 11, 1, 1)
+
+# Generate private key d
+private_key = random.randint(1, 10)
+print(f"Private key: {private_key}")
+
+# Generate public key (B = d * A)
+public_key = ecdsa.group.point_multiplication(ecdsa.public[4], private_key)
+print(f"Public key: {public_key}")
+
+# Generate a message (x) to sign
+x = random.randint(1, 1000)  # Random message
+print(f"Message (x): {x}")
+
+# Generate the signature for the message
+signature = ecdsa.signature_generation(x)
+print(f"Generated signature: {signature}")
+
+# Verify the signature
+is_valid = ecdsa.signature_verification(signature)
+print(f"Signature valid: {is_valid}")

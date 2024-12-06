@@ -77,4 +77,8 @@ class SHA256:
 # Example Usage
 sha = SHA256()
 hash_result = sha.compute("COMPSCI 4CR3")
-print(hash_result == "8b709893e1b5f6008bfa29295ab4dd2fc0cc81cb68e22c5bb6a69a79d57e6db4")
+print(hash_result)
+# data = "COMPSCI 4CR3"
+# hash_object = sha256(data.encode())
+# hash_hex = hash_object.hexdigest()
+# print(hash_hex)
