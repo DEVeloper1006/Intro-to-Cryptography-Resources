@@ -4,6 +4,7 @@
 # It also performs Elgamal Signature Scheme
 
 import random, sympy, math
+from hashlib import sha256
 
 class PrimeCyclicGroupMult:
     
@@ -269,7 +270,86 @@ class ElgamalSignatureScheme:
         while b:
             a, b = b, a % b
         return a
+
+class DSA:
     
+    def __init__ (self):
+        self.p, self.q = self._generate_large_primes()
+        self.group = PrimeCyclicGroupMult(self.q)
+        self.alpha = random.choice(self.group.elements)
+        self.d = random.randint(0, self.q)
+        self.beta = pow(self.alpha, self.d, self.p)
+        self.public = (self.p, self.q, self.alpha, self.beta)
+        self.private = self.d
+
+    def _generate_large_primes (self):
+        
+        def miller_rabin(n, k=10):
+            if n < 2:
+                return False
+            if n in (2, 3):
+                return True
+            if n % 2 == 0:
+                return False
+
+            r, d = 0, n - 1
+            while d % 2 == 0:
+                d //= 2
+                r += 1
+
+            for _ in range(k):
+                a = random.randint(2, n - 2)
+                x = pow(a, d, n)
+                if x == 1 or x == n - 1:
+                    continue
+                for _ in range(r - 1):
+                    x = pow(x, 2, n)
+                    if x == n - 1:
+                        break
+                else:
+                    return False
+            return True
+        
+        def generate_large_prime (self, lower_bound, upper_bound):
+            while True:
+                candidate = random.randint(lower_bound, upper_bound)
+                if miller_rabin(candidate):
+                    return candidate
+            
+        lower_bound_q = 2**223
+        upper_bound_q = 2**224 - 1
+        lower_bound_p = 2**2047
+        upper_bound_p = 2**2048 - 1
+
+        for _ in range(4096):
+            # Step 1: Find a 224-bit prime q
+            q = generate_large_prime(lower_bound_q, upper_bound_q)
+
+            # Step 2: Find a 2048-bit prime p such that p - 1 is a multiple of q
+            for _ in range(1000):  # Limit attempts to find p
+                m = random.randint(lower_bound_p, upper_bound_p)
+                p = m - (m % (2 * q)) + 1  # Adjust m so that p-1 is a multiple of q
+                if p > lower_bound_p and p < upper_bound_p and sympy.isprime(p):
+                    return p, q
+
+        raise ValueError("Failed to find suitable primes p and q within 4096 iterations.")  
+    
+    def signature_generation (self, x):
+        ephemeral = random.randint(0, self.q)
+        ephemeral_inv = self.group.find_inverse(ephemeral)
+        r = pow(self.alpha, ephemeral, self.p) % self.q
+        h_x = sha256(x.encode("utf-8").hexdigest())
+        s = self.group.derive_new_element((h_x + self.d * r), ephemeral_inv)
+        return (h_x, (r, s))
+        
+    def signature_verification (self, msg):
+        h_x, (r, s) = msg
+        w = self.group.find_inverse(s) % self.q
+        u1 = self.group.derive_new_element(w, h_x)
+        u2 = self.group.derive_new_element(w, r)
+        v = ((self.alpha ** u1) * (self.beta ** u2)) % self.q
+        return v % self.q == r        
+        
 # Testing Group Theory:
 # Test: Order of elements
 group = PrimeCyclicGroupMult(11)
