@@ -5,22 +5,23 @@
 import numpy as np
 
 class StreamCipherLFSR:
-    
-    def __init__ (self, coefficients, initial_seed):
+    def __init__(self, coefficients, initial_seed):
         self.coefficients = coefficients
         self.initial_seed = initial_seed
-        
-    def generate_key_stream (self, num_bits):
+
+    def generate_key_stream(self, num_bits):
         lfsr = self.initial_seed[:]
         key_stream = []
-        
+
         for _ in range(num_bits):
             feedback_bit = 0
             for i in range(len(self.initial_seed)):
                 if self.coefficients[i] == 1:
                     feedback_bit ^= lfsr[i]
-            key_stream.append(lfsr.pop(0))
-            lfsr.append(feedback_bit)
+            key_stream.append(feedback_bit)  # Append the feedback bit to the key stream
+            lfsr.pop(0)                     # Remove the oldest bit
+            lfsr.append(feedback_bit)       # Append the feedback bit to the LFSR
+        key_stream.reverse()
         return key_stream
     
 class LFSRAnalyzer:
@@ -69,36 +70,45 @@ def decrypt(ciphertext, key_stream):
     if len(ciphertext) != len(key_stream): raise ValueError("ERROR.")
     return [ciphertext[i] ^ key_stream[i] for i in range(len(ciphertext))]
 
-# Define coefficients, initial seed, and plaintext
-coefficients = [1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0]
-initial_seed = [0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1]
-plain_text = [0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0,
-                0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1,
-                0, 1, 1, 0, 1, 1, 0, 1, 0, 0]
+coefficients = [1, 1, 0, 0, 1]
+initial_seed = [0, 1, 0, 1, 1]
 
-# Stream cipher instance
-cipher = StreamCipherLFSR(coefficients, initial_seed)
-key_stream = cipher.generate_key_stream(len(plain_text))
+lfsr = StreamCipherLFSR(coefficients, initial_seed)
+key_stream = lfsr.generate_key_stream(10)
+print(key_stream)  # Should output [1, 0, 0, 1, 0]
 
-# Encrypt plaintext
-cipher_text =encrypt(plain_text, key_stream)
-print(f"Ciphertext: {cipher_text}")
 
-# Decrypt ciphertext
-decrypted_text = decrypt(cipher_text, key_stream)
-print(f"Decrypted Text: {decrypted_text}")
 
-# Validate decryption
-print(f"Decryption successful: {decrypted_text == plain_text}")
+# # Define coefficients, initial seed, and plaintext
+# coefficients = [1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0]
+# initial_seed = [0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1]
+# plain_text = [0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0,
+#                 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1,
+#                 0, 1, 1, 0, 1, 1, 0, 1, 0, 0]
 
-# Known-plaintext attack
-analyzer = LFSRAnalyzer()
-recovered_coefficients = analyzer.recover_coeff(key_stream, len(initial_seed))
-print(f"Recovered Coefficients: {recovered_coefficients}")
-print(f"Correct Coefficients: {recovered_coefficients == coefficients}")
+# # Stream cipher instance
+# cipher = StreamCipherLFSR(coefficients, initial_seed)
+# key_stream = cipher.generate_key_stream(len(plain_text))
 
-# Validate matrix construction
-validator = MatrixValidator()
-A, b = validator.construct_matrix_A(key_stream)
-print(f"A matrix:\n{A}")
-print(f"b vector:\n{b}")
+# # Encrypt plaintext
+# cipher_text =encrypt(plain_text, key_stream)
+# print(f"Ciphertext: {cipher_text}")
+
+# # Decrypt ciphertext
+# decrypted_text = decrypt(cipher_text, key_stream)
+# print(f"Decrypted Text: {decrypted_text}")
+
+# # Validate decryption
+# print(f"Decryption successful: {decrypted_text == plain_text}")
+
+# # Known-plaintext attack
+# analyzer = LFSRAnalyzer()
+# recovered_coefficients = analyzer.recover_coeff(key_stream, len(initial_seed))
+# print(f"Recovered Coefficients: {recovered_coefficients}")
+# print(f"Correct Coefficients: {recovered_coefficients == coefficients}")
+
+# # Validate matrix construction
+# validator = MatrixValidator()
+# A, b = validator.construct_matrix_A(key_stream)
+# print(f"A matrix:\n{A}")
+# print(f"b vector:\n{b}")
