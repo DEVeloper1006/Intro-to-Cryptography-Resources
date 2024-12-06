@@ -1,8 +1,9 @@
 # Author: Dev Mody
 # Date: December 4th, 2024
 # Description: Implemented Zn^* where n is prime, performs DLP solution, defines the Diffie-Hellman Key Exchange and performs the naive Elgamal Encryption Protocol
+# It also performs Elgamal Signature Scheme
 
-import random, sympy
+import random, sympy, math
 
 class PrimeCyclicGroupMult:
     
@@ -215,6 +216,60 @@ class ElgamalEncryption:
         else:
             return self.group.derive_new_element(ciphertext, pow(self.public1, self.prime - self.private2 - 1, self.prime))
         
+class ElgamalSignatureScheme:
+    def __init__(self, prime):
+        self.p = prime  # Prime number for the group
+        self.g = 2  # Generator for the group (often 2 is used)
+        self.x = random.randint(1, self.p-2)  # Private key
+        self.y = pow(self.g, self.x, self.p)  # Public key y = g^x mod p
+
+    def signature_generation(self, message):
+        # Step 1: Choose a random k such that gcd(k, p-1) = 1
+        while True:
+            k = random.randint(1, self.p-2)
+            if self.gcd(k, self.p-1) == 1:
+                break
+        
+        # Step 2: Calculate r = g^k mod p
+        r = pow(self.g, k, self.p)
+        
+        # Step 3: Calculate s = k^(-1) * (m - x * r) mod (p-1)
+        k_inv = self.mod_inverse(k, self.p-1)  # Modular inverse of k modulo (p-1)
+        s = (k_inv * (message - self.x * r)) % (self.p - 1)
+        
+        return (r, s)
+
+    def signature_verification(self, signature, message):
+        r, s = signature
+        if not (1 <= r < self.p and 1 <= s < self.p):
+            return False
+        
+        # Step 1: Calculate v1 = y^r * r^s mod p
+        v1 = (pow(self.y, r, self.p) * pow(r, s, self.p)) % self.p
+        
+        # Step 2: Calculate v2 = g^m mod p
+        v2 = pow(self.g, message, self.p)
+        
+        # Step 3: If v1 == v2, the signature is valid
+        return v1 == v2
+
+    def mod_inverse(self, a, m):
+        # Extended Euclidean Algorithm to find the modular inverse
+        m0, x0, x1 = m, 0, 1
+        while a > 1:
+            q = a // m
+            m, a = a % m, m
+            x0, x1 = x1 - q * x0, x0
+        if x1 < 0:
+            x1 += m0
+        return x1
+
+    def gcd(self, a, b):
+        # Euclidean algorithm to find greatest common divisor
+        while b:
+            a, b = b, a % b
+        return a
+    
 # Testing Group Theory:
 # Test: Order of elements
 group = PrimeCyclicGroupMult(11)
@@ -277,3 +332,16 @@ print("Ciphertext:", ciphertext)  # Example output: Ciphertext of plaintext 5
 
 decrypted_text = elgamal.decrypt(ciphertext, person1=True)
 print("Decrypted Text:", decrypted_text)  # Expected: 5
+
+# Test for Elgamal Signature Scheme
+print("\nTesting Elgamal Signature Scheme:")
+message = 10  # Example message to sign
+elgamal_signature = ElgamalSignatureScheme(23)
+
+# Generate signature
+signature = elgamal_signature.signature_generation(message)
+print(f"Generated signature: {signature}")
+
+# Verify signature
+is_valid = elgamal_signature.signature_verification(signature, message)
+print(f"Signature valid: {is_valid}")

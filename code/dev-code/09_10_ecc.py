@@ -148,9 +148,35 @@ class EllipticCurveDiffieHellman:
         if private not in self.numbers or point not in self.group.points:
             raise ValueError("Invalid key")
         return self.group.point_multiplication(point, private)
-
+    
+class EllipticCurveDSA:
+    
+    def __init__(self, p, q):
+        
+        group = None
+        a = b = 0
+        while True:
+            a = random.randint(1, p - 1)
+            b = random.randint(1, p - 1)
+            group = EllipticCurveGroup(p, a, b)
+            if group.num_points == q:
+                break
+        self.group = group
+        p = p
+        q = q
+        A = random.choice(self.group.primitives)
+        d = random.randint(0, q)
+        B = self.group.point_multiplication(A, d)
+        self.public = (p, a, b, q, A, B)
+        self.private = d
+        self.numbers = range(1, q)
+        
+    def signature_generation (self, x):
+        ephemeral = random.randint(0, self.public[3])
+        R = self.group.point_multiplication(self.public[4], ephemeral)
+        
 #Tests EC Group
-curve = EllipticCurveGroup(17, 2, 2)
+curve = EllipticCurveGroup(18, 2, 2)
 print("Points on curve:", curve.points)
 print("Neutral element:", curve.neutral)
 print("Orders of points:", curve.orders)
