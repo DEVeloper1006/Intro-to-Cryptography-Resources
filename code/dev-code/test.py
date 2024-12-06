@@ -1,63 +1,33 @@
-import random
-from sympy import isprime
+import sympy
+class ModularInverse:
+    
+    def __init__(self, a, m):
+        self.a = a
+        self.m = m
+    
+    def euler_mod_inverse(self):
+        if sympy.isprime(self.m):
+            phi_m = self.m - 1  # Assuming m is prime
+            inverse_b = pow(self.a, phi_m - 1, self.m)
+            return inverse_b
+        return self.eea_mod_inverse()
 
-def miller_rabin(n, k=10):
-    """Perform Miller-Rabin primality test."""
-    if n < 2:
-        return False
-    if n in (2, 3):
-        return True
-    if n % 2 == 0:
-        return False
-
-    r, d = 0, n - 1
-    while d % 2 == 0:
-        d //= 2
-        r += 1
-
-    for _ in range(k):
-        a = random.randint(2, n - 2)
-        x = pow(a, d, n)
-        if x == 1 or x == n - 1:
-            continue
-        for _ in range(r - 1):
-            x = pow(x, 2, n)
-            if x == n - 1:
-                break
+    def eea_mod_inverse(self):
+        s0, s1 = 1, 0
+        t0, t1 = 0, 1
+        r0, r1 = self.a, self.m
+        
+        while r1 != 0:
+            q = r0 // r1
+            r0, r1 = r1, r0 - q * r1
+            s0, s1 = s1, s0 - q * s1
+            t0, t1 = t1, t0 - q * t1
+        
+        if r0 != 1:
+            return None  # No inverse exists
         else:
-            return False
-    return True
-
-def generate_large_prime(lower_bound, upper_bound):
-    """Generate a large prime number in the specified range."""
-    while True:
-        candidate = random.randint(lower_bound, upper_bound)
-        if miller_rabin(candidate):
-            return candidate
-
-def generate_dsa_primes():
-    """Generate primes p and q for DSA."""
-    lower_bound_q = 2**223
-    upper_bound_q = 2**224 - 1
-    lower_bound_p = 2**2047
-    upper_bound_p = 2**2048 - 1
-
-    for _ in range(4096):
-        # Step 1: Find a 224-bit prime q
-        q = generate_large_prime(lower_bound_q, upper_bound_q)
-
-        # Step 2: Find a 2048-bit prime p such that p - 1 is a multiple of q
-        for _ in range(1000):  # Limit attempts to find p
-            m = random.randint(lower_bound_p, upper_bound_p)
-            p = m - (m % (2 * q)) + 1  # Adjust m so that p-1 is a multiple of q
-            if p > lower_bound_p and p < upper_bound_p and isprime(p):
-                return p, q
-
-    raise ValueError("Failed to find suitable primes p and q within 4096 iterations.")
-
-# Example usage
-try:
-    p, q = generate_dsa_primes()
-    print(f"Generated primes:\np = {p}\nq = {q}")
-except ValueError as e:
-    print(e)
+            return s0 % self.m
+        
+mod_inv = ModularInverse(4, 11)
+print(mod_inv.euler_mod_inverse())  # Output: 3
+print((193 * 3) % 11)
