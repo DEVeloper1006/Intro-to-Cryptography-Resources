@@ -350,10 +350,6 @@ class DSA:
         v = ((self.alpha ** u1) * (self.beta ** u2)) % self.q
         return v % self.q == r        
         
-group = PrimeCyclicGroupMult(953)
-for elem in [602, 746, 780, 94]:
-    print(f"{elem} is a primitive = {elem in group.primitives}")       
-        
 # Testing Group Theory:
 # Test: Order of elements
 group = PrimeCyclicGroupMult(11)

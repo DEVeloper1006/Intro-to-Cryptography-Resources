@@ -29,5 +29,3 @@ num2 = 123456789123456789
 gcd_result, x, y = extended_euclid(num1, num2)
 print(f"The gcd of {num1} and {num2} is: {gcd_result}")
 print(f"The coefficients x and y are: x = {x}, y = {y}")
-
-print(extended_euclid(112, 86))
