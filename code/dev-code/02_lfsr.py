@@ -8,20 +8,23 @@ class StreamCipherLFSR:
     def __init__(self, coefficients, initial_seed):
         self.coefficients = coefficients
         self.initial_seed = initial_seed
-
+        self.initial_seed.reverse()
+        self.coefficients.reverse()
+        
     def generate_key_stream(self, num_bits):
         lfsr = self.initial_seed[:]
         key_stream = []
-
+        print(lfsr)
         for _ in range(num_bits):
             feedback_bit = 0
             for i in range(len(self.initial_seed)):
                 if self.coefficients[i] == 1:
                     feedback_bit ^= lfsr[i]
-            key_stream.append(feedback_bit)  # Append the feedback bit to the key stream
-            lfsr.pop(0)                     # Remove the oldest bit
+                    print(feedback_bit)
+            temp = lfsr.pop(0)
+            key_stream.append(temp)# Remove the oldest bit
             lfsr.append(feedback_bit)       # Append the feedback bit to the LFSR
-        key_stream.reverse()
+            print(lfsr)
         return key_stream
     
 class LFSRAnalyzer:
@@ -72,12 +75,14 @@ def decrypt(ciphertext, key_stream):
 
 coefficients = [1, 1, 0, 0, 1]
 initial_seed = [0, 1, 0, 1, 1]
+initial_seed.reverse()
+
+# coefficients = [1, 0, 1]
+# initial_seed = [1, 0, 0]
 
 lfsr = StreamCipherLFSR(coefficients, initial_seed)
-key_stream = lfsr.generate_key_stream(10)
+key_stream = lfsr.generate_key_stream(5)
 print(key_stream)  # Should output [1, 0, 0, 1, 0]
-
-
 
 # # Define coefficients, initial seed, and plaintext
 # coefficients = [1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0]
