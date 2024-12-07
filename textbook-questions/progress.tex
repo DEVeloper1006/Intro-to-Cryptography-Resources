@@ -1,0 +1,141 @@
+\documentclass[titlepage]{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{geometry}
+\geometry{margin=0.75in}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{appendix}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{titling}
+\graphicspath{ {./images/} }
+\hypersetup{
+	colorlinks=true,
+	linkcolor=black,
+	urlcolor=blue
+}
+\usepackage{wrapfig}
+\usepackage{breqn}
+
+
+\title{\textbf{COMPSCI 4CR3 Textbook Problems}}
+\author{Dev Mody}
+\date{December 2024}
+
+\begin{document}
+\begin{titlepage}
+\begin{titlingpage}
+\maketitle
+\end{titlingpage}
+\end{titlepage}
+\clearpage
+\renewcommand{\baselinestretch}{1.5}\normalsize
+\tableofcontents
+\clearpage
+
+\section{Chapter 1}
+{
+\subsection{Question 2}
+{
+\textbf{We have received the following ciphertext which was encoded with a shift cipher: xultpaajcxitltlxaarpjhtiwtgxktghidhipxciwtvgtpilpitghlxiwiwtxgqadds.}
+\subsubsection{Perform an attack against the cipher based on a letter frequency count: How many letters do you have to identify through a frequency count to recover the key? What is the cleartext?}
+{
+To decrypt the ciphertext, we only need one letter since this was done by a shift cipher. The code in my life outlines that the most frequent letter was t and we know that e is the most frequent letter in the English language. To solve this riddle, we need to make 11 steps ahead in the alphabet for each letter. The decrypted plaintext is \texttt{if we all unite we will cause the rivers to stain the great waters with their blood}
+}
+\subsubsection{Who wrote this message?}
+{
+The person who wrote this message was Tecumseh, a Shawnee chief and warrior who promoted resistance to the expansion of the United States onto Native American lands.
+}
+}
+\subsection{Question 3}
+{
+\textbf{We consider the long-term security of the Advanced Encryption Standard (AES) with a key length of 128 bits with respect to exhaustive key-search attacks. AES is perhaps the most widely used symmetric cipher at this time}
+\subsubsection{Part 1}
+{
+Assume that an attacker has special-purpose hardware chips (ASICs) that check \(5 \cdot 10^8\) keys per second and has a budget of \$1 million. One ASIC costs \$50, and we assume 100\% overhead for integrating it. How many ASICs can we run in parallel given the budget? How long does an average key search take? Relate this to the age of the universe, \(10^{10}\) years.\\\\
+One search engine costs \$100 including the overhead. Thus, \$1 million buys us 10,000 search engines. This means if we run all 10,000 search engines in parallel, we have \(5 \cdot 10^8 \cdot 10^4 = 5 \cdot 10^{12}\) key searches per second. Since we're searching for AES 128 bit keys, on average we check \(2^{127}\) keys. Thus, if we divide the number of keys by the speed at which they're searched, we get a time of \(1.08 \cdot 10^{18}\) years, which is 100 million times longer than the age of the universe.
+}
+\clearpage
+\subsubsection{Part 2}
+{
+We try now to take advances in computers into account. The estimate usually applied is Moore's Law which states that the computing power doubles every 18 months while the costs of integrated circuits stays constant. How many years do we have to wait until a key search machine can be built to break 128 bit AES with an average search time of 24 hours? Assume a budget of \$1 million.\\\\
+Let \(i\) be the number of Moore iterations needed. \(2^i = 1.08 \cdot 10^{18} \cdot 365 \implies i = 68.42 \approx 69\). Thus we have to wait for \(1.5 \cdot 69 = 103.5\) years. 
+}
+}
+\subsection{Question 4}
+{
+\textbf{We now consider the relations between passwords and their size. For this purpose, we consider a cryptosystem where the user enters a key in the form of a password.}
+\subsubsection{Part 1}
+{
+Assume a password consisting of 8 letters where each letter is encoded with ASCII code. What is the size of the key space which can be constructed by such passwords?\\\\
+Since each letter is an ASCII, there are 7 bits per character meaning \(2^7 = 128\) possible characters per letter. We have 8 such letters, which means the size of the key space is \((2^7)^8 = 2^{56}\) bits. 
+}
+\subsubsection{Part 2}
+{
+Assume that most users only use 26 lowercase letters from the alphabet instead of the full 7 bits of the ASCII-encoding. What is the corresponding key length in bits in this case?\\\\
+In this case, say we had 26 possible characters per letter. Then \(2^b = 26\). If we solve for \(b\), we get \(b = \log_2(26) \approx 5\) bits per letter. If we have 8 such letters in our password, the key length would be \(8 \times 5 = 40\) bits.  
+}
+\subsubsection{Part 3}
+{
+At least how many characters are required for a password to generate a key length of 128 bits in the case of 7-bit characters or 26 lowercase letters from the alphabet?\\\\
+For the 7-bit characters, we need at least one character for the password. In the case of the 26 lowercase letters. We know each letter is represented by 5 bits. If we divide \(128 / 5 \approx 26\) letters. Thus we need at least 26 letters to have at least 128 bits for a key length.
+}
+}
+\clearpage
+\subsection{Question 6}
+{
+\textbf{In this problem we consider the difference between end-to-end encryption (E2EE) and more classical approaches to encrypting when communicating over a channel that consists of multiple parts. E2EE is widely used, e.g., in instant messaging services such as WhatsApp or Signal. The idea behind this is that encryption and decryption are performed by the two users who communicate and all parties eavesdropping on the communication link cannot read (or meaningfully manipulate) the message.\\In the following we assume that each individual encryption with the cipher e() is secure, i.e., the cryptographic algorithm cannot be broken by an adversary. First we look at the communication between two smartphones without end-to-end encryption, shown in Figure 1.7. Encryption and/or decryption happen three times in this setting: Between Alice and base station A (air link), between base stations A and B (through the internet), and between base station B and Bob (again, air link). Describe which of the following attackers can read (and meaningfully manipulate) messages}.\\\\
+A hacker who can listen to (and alter) messages on the air link between Alice and her base station can definitely alter the encrypted message Alice sends. They cannot read the plaintext but they can tamper with the encrypted message thus sending a different message to the base station which would ultimately mean a different message for Bob.\\The Mobile Operator that runs and controls Base Station A can definitely read the plaintext and tamper with it because the message from Alice is decrypted and another encrypted message is sent.\\Since the Base Stations have the power to read and tamper with encrypted messages, a National Law Enforcement Agency controlling these stations have the power to do so as well.\\An intelligence agency of a foreign country that can wiretap any internet communication can only tamper with encrypted messages sent from one base station to the other.
+}
+\subsection{Question 13}
+{
+\textbf{This problem deals with the affine cipher where the key is given as a = 7 and
+b=22.}
+\subsubsection{Decrypt the text: falszztysyjzyjkywjrztyjztyynaryjkyswarztyegyyj}
+{
+The decrypted text is FIRST THE SENTENCE AND THEN THE EVIDENCE SAID THE QUEEN
+}
+\subsubsection{Who wrote the line?}
+{
+This line was referenced in Alice in Wonderland.
+}
+}
+\clearpage
+\subsection{Question 15}
+{
+\textbf{We consider an attack scenario where the adversary Oscar manages to provide Alice with a few pieces of plaintext that she encrypts. Show how Oscar can break the affine cipher by using two pairs of plaintext–ciphertext, \((x_1,y_1)\) and \((x_2,y_2)\). What is the condition for choosing \(x_1\) and \(x_2\)?}\\\\
+Oscar can definitely break the Affine Cipher using two pairs of plaintext-ciphertext. This is because the Affine Cipher is analagous to the Caesar Cipher where each letter is shifted the same amount of times. Thus, if two entirely different \(x_1 \neq x_2\) plaintexts were encrypted and sent over, Oscar would definitely have two distinct \(y_1 \neq y_2\). As a result, it would be possible to do some frequency or analytical attack where Oscar would need to find out the common shifts in letters.
+}
+\subsection{Question 16}
+{
+\textbf{An obvious way to increase the security of a symmetric algorithm is to apply the same cipher twice \(y = e_{k2}(e_{k1}(x))\). As is often the case, things can be tricky and the results are often different from the expected ones. In this problem we show that a double encryption with the affine cipher is only as secure as single encryption. Assume \(e_{k1} \equiv a_1x + b_1 \mod 26\) and \(e_{k2} \equiv a_2x + b_2 \mod 26\).}
+\subsubsection{Show that there exists a single cipher \(e_{k3} \equiv a_3x + b_3 \mod 26\) which performs exactly the same as \(e_{k2}(e_{k1}(x))\)}
+{
+We can substitute the values to show this holds. \(e_{k2}(e_{k1}(x)) \equiv a_2(a_1x + b_1) + b_2 \mod 26 \equiv a_2a_1x + a_2b_1 + b_2 \mod 26 \equiv a_3x + b_3 \mod 26 \equiv e_{k3}\)
+}
+\subsubsection{Briefly describe what happens if an exhaustive key-search attack is applied to a
+double-encrypted affine ciphertext. Is the effective key space increased?}
+{
+An exhaustive key-search attack on a double-encrypted affine ciphertext does not increase the effective key space because the double encryption can be reduced to a single affine cipher with combined coefficients. Therefore, the key space remains the same as for a single affine cipher, offering no additional security.
+}
+}
+}
+\clearpage
+\section{Chapter 2}
+{
+\subsection{Question 1}
+{
+\textbf{The Stream Cipher described in Definition 2.1.1 can be generalized to work in alphabets other than the binary one. For manual encryption, an especially useful one is a stream cipher that works on letters.}
+\subsubsection{Develop a scheme which operates with the letters A, B,. . ., Z, represented by the numbers 0,1,...,25. What does the key (stream) look like? What are the encryption and decryption functions?}
+{
+In the original stream cipher, the entire concept was XORing each bit of the plaintext to the same corresponding position of the key. In this case, 
+}
+}
+}
+\end{document}
+
