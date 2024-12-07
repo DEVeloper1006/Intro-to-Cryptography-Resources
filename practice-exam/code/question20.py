@@ -17,7 +17,7 @@ def part_a ():
     print("Verification Process")
     w = pow(s, -1, q)
     print("W:", w)
-    u1 = (h_x * w) % qu
+    u1 = (h_x * w) % q
     u2 = (r * w) % q
     print("U1:", u1)
     print("U2:", u2)
