@@ -37,6 +37,76 @@ INVERSE_S_BOX = [
 ]
 
 Rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36]
+
+class GaloisField:
+    def __init__(self, m=8, irreducible_poly=0x11b):
+        self.m = m
+        self.irreducible_poly = self.num_to_poly(irreducible_poly)
+        self.size = 2**m
+        self.elements = self._generate_elements()
+        
+    def num_to_poly(self, num):
+        return [int(x) for x in bin(num)[2:].zfill(8)]    
+        
+    def poly_to_num (self, poly):
+        return int("".join(map(str, poly)), 2)
+        
+    def _generate_elements (self) -> list:
+        elements = []
+        for value in range(self.size):
+            # Convert integer value to bit list of size m
+            bit_list = [(value >> i) & 1 for i in reversed(range(self.m))]
+            elements.append(bit_list)
+        return elements
+    
+    def add (self, A : list, B : list) -> list:
+        if A not in self.elements or B not in self.elements:
+            raise ValueError("Both elements must be in the field")
+        result = []
+        for i in range(self.m):
+            result.append((A[i] + B[i]) % 2)
+        return result
+        
+    def multiply (self, A : list, B : list) -> list:
+        if A not in self.elements or B not in self.elements:
+            raise ValueError("Both elements must be in the field")
+        product = [0] * (2 * self.m - 1)
+
+        # Polynomial multiplication
+        for i, ai in enumerate(reversed(A)):
+            for j, bi in enumerate(reversed(B)):
+                product[-(i + j + 1)] ^= ai & bi  # XOR for GF(2)
+
+        # Reduce modulo the irreducible polynomial
+        return self._reduce(product)
+    
+    def _reduce (self, poly : list):
+        poly_degree = len(poly) - 1
+        while poly_degree >= self.m:
+            if poly[0] == 1:  # Leading term is non-zero
+                # Subtract the irreducible polynomial shifted to align with poly's degree
+                for i in range(len(self.irreducible_poly)):
+                    poly[i] ^= self.irreducible_poly[i]
+            # Remove the leading zero (shift left)
+            poly.pop(0)
+            poly_degree -= 1
+
+        # Pad with zeros if necessary
+        return [0] * (self.m - len(poly)) + poly
+    
+    def element_to_str(self, a : list):
+        terms = []
+        for i, coeff in enumerate(a):
+            if coeff:
+                power = self.m - i - 1
+                if power == 0:
+                    terms.append("1")
+                elif power == 1:
+                    terms.append("x")
+                else:
+                    terms.append(f"x^{power}")
+        return " + ".join(terms) if terms else "0"
+
 class AES:
     
     def __init__ (self, key):
@@ -47,16 +117,17 @@ class AES:
         self.key_size = len(key)
         self.round_keys = self._organize_key(self._key_expansion())
     
-    def _galois_mult(self, a, b):
-        sum = 0;
-        while (b > 0):
-            if (b & 1):
-                sum = sum ^ a
-            b = b >> 1
-            a = a << 1
-            if (a & 0x100):
-                a = a ^ 0x11B
-        return sum;
+    # def galois_mult(a, b):
+    #     p = 0  # Result of multiplication
+    #     for _ in range(8):  # Loop over each bit
+    #         if b & 1:  # If the least significant bit of b is set
+    #             p ^= a  # XOR the result with a
+    #         carry = a & 0x80  # Check if the highest bit of a is set
+    #         a = (a << 1) & 0xFF  # Shift a to the left, keep it in one byte
+    #         if carry:  # If carry is set, reduce modulo x^8 + x^4 + x^3 + x + 1 (0x11b)
+    #             a ^= 0x11b
+    #         b >>= 1  # Shift b to the right
+    #     return p
     
     def _sub_bytes(self, state, inverse=False):
         s_box = INVERSE_S_BOX if inverse else S_BOX
@@ -96,7 +167,13 @@ class AES:
         for c in range(4):
             for r in range(4):
                 # Calculate new value for each element in the column
-                result[r][c] = sum(self._galois_mult(state[i][c], mix_matrix[r][i]) for i in range(4)) & 0xFF
+                gf = GaloisField()
+                sum_num = 0
+                for i in range(4):
+                    A = state[i][c]
+                    B = mix_matrix[r][i]
+                    sum_num += gf.poly_to_num(gf.multiply(gf.num_to_poly(A), gf.num_to_poly(B)))
+                result[r][c] = sum_num & 0xFF
         return result
     
     def _add_round_key(self, state, round_key):
@@ -203,4 +280,5 @@ expected_ciphertext = [
 
 aes = AES(key)
 ciphertext = aes.encrypt_block(plaintext)
-print(plaintext == aes.decrypt_block(ciphertext))
+print([hex(num) for num in ciphertext])
+print([hex(num) for num in aes.decrypt_block(ciphertext)])

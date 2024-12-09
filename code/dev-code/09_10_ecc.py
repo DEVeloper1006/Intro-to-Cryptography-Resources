@@ -108,7 +108,7 @@ class EllipticCurveGroup:
     def _find_orders(self):
         orders = {}
         for point in self.points:
-            count = 0
+            count = 1
             current = point
             while current != self.neutral:
                 count += 1
@@ -191,65 +191,65 @@ class EllipticCurveDSA:
         point1 = self.group.point_adding(self.group.point_multiplication(self.public[4], u1), self.group.point_multiplication(self.public[5], u2))
         return point1[0] % self.public[3] == r
         
-#Tests EC Group
-curve = EllipticCurveGroup(17, 2, 2)
-print("Points on curve:", curve.points)
-print("Neutral element:", curve.neutral)
-print("Orders of points:", curve.orders)
-print("Primitive elements:", curve.primitives)
-print("Discrete Log of:", curve.ec_discrete_log_problem((0,6), (5,1)))
+# #Tests EC Group
+# curve = EllipticCurveGroup(17, 2, 2)
+# print("Points on curve:", curve.points)
+# print("Neutral element:", curve.neutral)
+# print("Orders of points:", curve.orders)
+# print("Primitive elements:", curve.primitives)
+# print("Discrete Log of:", curve.ec_discrete_log_problem((0,6), (5,1)))
 
-# Example point multiplication
-P = (0, 6)
-k = 3
-print(f"{k} * {P} = {curve.point_multiplication(P, k)}")
+# # Example point multiplication
+# P = (0, 6)
+# k = 3
+# print(f"{k} * {P} = {curve.point_multiplication(P, k)}")
 
-#Testing ECDHKE
-prime = 17
-a = 2
-b = 2
+# #Testing ECDHKE
+# prime = 17
+# a = 2
+# b = 2
 
-# Initialize Diffie-Hellman exchange
-dh = EllipticCurveDiffieHellman(prime, a, b)
+# # Initialize Diffie-Hellman exchange
+# dh = EllipticCurveDiffieHellman(prime, a, b)
 
-# Simulate Alice's private and public key
-alice_private = random.choice(dh.numbers)
-alice_public = dh.create_public_key(alice_private)
+# # Simulate Alice's private and public key
+# alice_private = random.choice(dh.numbers)
+# alice_public = dh.create_public_key(alice_private)
 
-# Simulate Bob's private and public key
-bob_private = random.choice(dh.numbers)
-bob_public = dh.create_public_key(bob_private)
+# # Simulate Bob's private and public key
+# bob_private = random.choice(dh.numbers)
+# bob_public = dh.create_public_key(bob_private)
 
-# Alice and Bob generate shared keys
-alice_shared_key = dh.create_shared_key(bob_public, alice_private)
-bob_shared_key = dh.create_shared_key(alice_public, bob_private)
+# # Alice and Bob generate shared keys
+# alice_shared_key = dh.create_shared_key(bob_public, alice_private)
+# bob_shared_key = dh.create_shared_key(alice_public, bob_private)
 
-# Test if the shared keys match (should be the same)
-assert alice_shared_key == bob_shared_key, f"Test failed! Alice's shared key: {alice_shared_key}, Bob's shared key: {bob_shared_key}"
+# # Test if the shared keys match (should be the same)
+# assert alice_shared_key == bob_shared_key, f"Test failed! Alice's shared key: {alice_shared_key}, Bob's shared key: {bob_shared_key}"
 
-print("Test passed! Diffie-Hellman key exchange works correctly.")
+# print("Test passed! Diffie-Hellman key exchange works correctly.")
 
-ecdsa = EllipticCurveDSA(23, 11, 1, 1)
+# ecdsa = EllipticCurveDSA(23, 11, 1, 1)
 
-# Generate private key d
-private_key = random.randint(1, 10)
-print(f"Private key: {private_key}")
+# # Generate private key d
+# private_key = random.randint(1, 10)
+# print(f"Private key: {private_key}")
 
-# Generate public key (B = d * A)
-public_key = ecdsa.group.point_multiplication(ecdsa.public[4], private_key)
-print(f"Public key: {public_key}")
+# # Generate public key (B = d * A)
+# public_key = ecdsa.group.point_multiplication(ecdsa.public[4], private_key)
+# print(f"Public key: {public_key}")
 
-# Generate a message (x) to sign
-x = random.randint(1, 1000)  # Random message
-print(f"Message (x): {x}")
+# # Generate a message (x) to sign
+# x = random.randint(1, 1000)  # Random message
+# print(f"Message (x): {x}")
 
-# Generate the signature for the message
-signature = ecdsa.signature_generation(x)
-print(f"Generated signature: {signature}")
+# # Generate the signature for the message
+# signature = ecdsa.signature_generation(x)
+# print(f"Generated signature: {signature}")
 
-# Verify the signature
-is_valid = ecdsa.signature_verification(signature)
-print(f"Signature valid: {is_valid}")
+# # Verify the signature
+# is_valid = ecdsa.signature_verification(signature)
+# print(f"Signature valid: {is_valid}")
 
 curve = EllipticCurveGroup(11, 1, 2)
 print(curve.orders)

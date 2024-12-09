@@ -1,95 +1,81 @@
-# Author: Dev Mody
-# Date: December 4th, 2024
-# Description: Implements Galois Extension Fields
-
-import numpy as np
-
 class GaloisField:
-    def __init__(self, field_size, irreducible_poly):
-        self.field_size = 2 ^ field_size
-        self.irreducible_poly = irreducible_poly
-
-        #self.inverses = self.precompute_inverses()
-
-    def precompute_inverses(self):
-        inverses = {}
-        for i in range(1, self.field_size):
-            inverses[i] = self.multiplicative_inverse(i)
-        return inverses
-
-    def add(self, a, b):
-        return a ^ b
-
-    def subtract(self, a, b):
-        return a ^ b
-
-    def multiply(self, a, b):
-        result = 0
-        while b:
-            if b & 1:  # If the lowest bit of b is set, add a to result
-                result ^= a
-            b >>= 1  # Shift b right
-            a <<= 1  # Shift a left
-            if a & self.field_size:  # Check if a exceeds the field size
-                a ^= self.irreducible_poly  # Reduce modulo the irreducible polynomial
-        return result
-
-    def divide(self, a, b):
-        if b == 0:
-            raise ValueError("Division by zero is not defined in GF(2^n)")
-        inv_b = self.multiplicative_inverse(b)
-        return self.multiply(a, inv_b)
-
-    def multiplicative_inverse(self, b):
-        r0, r1 = self.irreducible_poly, b
-        t0, t1 = 0, 1
-
-        while r1 != 0:
-            # Now compute the quotient by reducing r0 with r1
-            # This part mimics the division in finite field with XOR
-            quotient = r0 ^ r1
-            r0, r1 = r1, r0 ^ self.multiply(quotient, r1)
-            t0, t1 = t1, t0 ^ self.multiply(quotient, t1)
-
-        if r0 != 1:
-            raise ValueError(f"{b} has no multiplicative inverse in GF(2^n)")
-        return t0
-
-    def vector_to_int(self, vector):
-        """Converts binary vector to regular integer."""
-        return int(''.join(map(str, vector)), 2)
+    def __init__(self, m=8, irreducible_poly=0x11b):
+        self.m = m
+        self.irreducible_poly = self.num_to_poly(irreducible_poly)
+        self.size = 2**m
+        self.elements = self._generate_elements()
+        
+    def num_to_poly(self, num):
+        return [int(x) for x in bin(num)[2:].zfill(8)]    
+        
+    def poly_to_num (self, poly):
+        return int("".join(map(str, poly)), 2)
+        
+    def _generate_elements (self) -> list:
+        elements = []
+        for value in range(self.size):
+            # Convert integer value to bit list of size m
+            bit_list = [(value >> i) & 1 for i in reversed(range(self.m))]
+            elements.append(bit_list)
+        return elements
     
-    def int_to_vector(self, value):
-        """Converts integer to binary vector."""
-        return list(map(int, bin(value)[2:].zfill(self.degree)))
+    def add (self, A : list, B : list) -> list:
+        if A not in self.elements or B not in self.elements:
+            raise ValueError("Both elements must be in the field")
+        result = []
+        for i in range(self.m):
+            result.append((A[i] + B[i]) % 2)
+        return result
+        
+    def multiply (self, A : list, B : list) -> list:
+        if A not in self.elements or B not in self.elements:
+            raise ValueError("Both elements must be in the field")
+        product = [0] * (2 * self.m - 1)
 
+        # Polynomial multiplication
+        for i, ai in enumerate(reversed(A)):
+            for j, bi in enumerate(reversed(B)):
+                product[-(i + j + 1)] ^= ai & bi  # XOR for GF(2)
 
-# Test with smaller values
-def test_galois_field():
-    gf = GaloisField(field_size=4, irreducible_poly = 19)
+        # Reduce modulo the irreducible polynomial
+        return self._reduce(product)
+    
+    def _reduce (self, poly : list):
+        poly_degree = len(poly) - 1
+        while poly_degree >= self.m:
+            if poly[0] == 1:  # Leading term is non-zero
+                # Subtract the irreducible polynomial shifted to align with poly's degree
+                for i in range(len(self.irreducible_poly)):
+                    poly[i] ^= self.irreducible_poly[i]
+            # Remove the leading zero (shift left)
+            poly.pop(0)
+            poly_degree -= 1
 
-    print("Addition (1 ^ 2):", bin(gf.add(13, 6))) 
-    print("Subtraction (1 ^ 2):", bin(gf.subtract(13, 6)))  
+        # Pad with zeros if necessary
+        return [0] * (self.m - len(poly)) + poly
+    
+    def element_to_str(self, a : list):
+        terms = []
+        for i, coeff in enumerate(a):
+            if coeff:
+                power = self.m - i - 1
+                if power == 0:
+                    terms.append("1")
+                elif power == 1:
+                    terms.append("x")
+                else:
+                    terms.append(f"x^{power}")
+        return " + ".join(terms) if terms else "0"
 
-    # Test multiplication
-    print("Multiplication (2 * 3):", bin(gf.multiply(13, 6))) 
-
-    # Test division (multiplying by inverse)
-    #print("Division (2 / 3):", gf.divide(2, 3))  # Expected: 2
-
-    # Test multiplicative inverse
-   #print("Multiplicative Inverse of 2:", gf.multiplicative_inverse(2))  # Expected: 3
-
-    # Test division by zero
-    # try:
-    #     print("Division by zero (2 / 0):", gf.divide(2, 0))
-    # except ValueError as e:
-    #     print("Division by zero:", e)
-
-    # Test field size validation (only power of 2 is allowed)
-    # try:
-    #     gf_invalid = GaloisField(field_size=5, irreducible_poly=0x3)  # Should raise ValueError
-    # except ValueError as e:
-    #     print("Invalid field size:", e)
-
-test_galois_field()
+gf = GaloisField(3, [1,0,1,1])
+for A in gf.elements:
+    print()
+    for B in gf.elements:
+        print(f"{A} * {B} = {gf.multiply(A, B)}")
+    print()
+        
+        
+        
+        # x (x + 1) = x^2 + x
+        # x (x^2 + x) = x^3 + x^2
+        # x (x^2 + x + 1) = x^3 + x^2 + x
