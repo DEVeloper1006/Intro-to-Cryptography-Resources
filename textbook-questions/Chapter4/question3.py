@@ -67,9 +67,3 @@ for A in gf.elements:
     for B in gf.elements:
         print(f"{A} * {B} = {gf.multiply(A, B)}")
     print()
-        
-        
-        
-        # x (x + 1) = x^2 + x
-        # x (x^2 + x) = x^3 + x^2
-        # x (x^2 + x + 1) = x^3 + x^2 + x

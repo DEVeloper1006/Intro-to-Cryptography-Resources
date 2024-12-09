@@ -48,6 +48,18 @@ class GaloisField:
         # Pad with zeros if necessary
         return [0] * (self.m - len(poly)) + poly
     
+    def naive_inverse (self, a):
+        if a not in self.elements or a == [0,0,0]:
+            raise ValueError("Element must be in the field")
+        for element in self.elements:
+            mult = self.multiply(a, element)
+            for i in range(self.m):
+                if mult[i] != 0:
+                    break
+            if i == len(mult) - 1:
+                return mult
+        raise ValueError("Inverse not found")
+    
     def element_to_str(self, a : list):
         terms = []
         for i, coeff in enumerate(a):
@@ -61,15 +73,11 @@ class GaloisField:
                     terms.append(f"x^{power}")
         return " + ".join(terms) if terms else "0"
 
-gf = GaloisField(3, [1,0,1,1])
-for A in gf.elements:
-    print()
-    for B in gf.elements:
-        print(f"{A} * {B} = {gf.multiply(A, B)}")
-    print()
-        
-        
-        
-        # x (x + 1) = x^2 + x
-        # x (x^2 + x) = x^3 + x^2
-        # x (x^2 + x + 1) = x^3 + x^2 + x
+gf = GaloisField(4, [1,0,0,1,1])
+A1 = [0,1,0,1]
+B1 = [1,1,0,1]
+print(gf.multiply(A1, B1))
+A2 = [0,1,0,1]
+B2 = [0,0,1,1]
+print(gf.multiply(A2, B2))
+print(gf.naive_inverse(A1))
