@@ -3,6 +3,7 @@
 # Description: Implemented Zn^* where n is prime, performs DLP solution, defines the Diffie-Hellman Key Exchange and performs the naive Elgamal Encryption Protocol
 # It also performs Elgamal Signature Scheme
 
+
 import random, sympy, math
 from hashlib import sha256
 
@@ -38,8 +39,8 @@ class PrimeCyclicGroupMult:
         return primitives
     
     def _find_subgroups (self):
-        subgroups = []
-        subgroups.append(self.elements)
+        subgroups = {}
+        subgroups[len(self.elements)] = self.elements
         marked = set()
         for order in self.orders.values():
             if order != len(self.elements) and order not in marked:
@@ -49,7 +50,7 @@ class PrimeCyclicGroupMult:
                         subgroup.append(i)
                 for primitive in self.primitives:
                     subgroup.append(primitive)
-                subgroups.append(subgroup)
+                subgroups[order] = subgroup
                 marked.add(order)
         return subgroups
                 
@@ -89,6 +90,10 @@ class PrimeCyclicGroupMult:
         if gcd != 1:
             raise ValueError(f"No inverse exists for {element} modulo {self.n}")
         return x % self.n
+
+    def print_subgroups (self):
+        for order, subgroup in self.subgroups.items():
+            print(f"Subgroup of order {order}: {subgroup}")
         
 class DiffieHellman:
     

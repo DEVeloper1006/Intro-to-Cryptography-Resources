@@ -1,9 +1,15 @@
 class GaloisField:
-    def __init__(self, m, irreducible_poly : list):
+    def __init__(self, m=8, irreducible_poly=0x11b):
         self.m = m
-        self.irreducible_poly = irreducible_poly
+        self.irreducible_poly = self.num_to_poly(irreducible_poly)
         self.size = 2**m
         self.elements = self._generate_elements()
+        
+    def num_to_poly(self, num):
+        return [int(x) for x in bin(num)[2:].zfill(8)]    
+        
+    def poly_to_num (self, poly):
+        return int("".join(map(str, poly)), 2)
         
     def _generate_elements (self) -> list:
         elements = []
