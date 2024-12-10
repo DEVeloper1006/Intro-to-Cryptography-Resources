@@ -7,8 +7,10 @@
 import random, sympy, math
 from hashlib import sha256
 
+# Groups Implementation
 class PrimeCyclicGroupMult:
     
+    # n should be a prime number
     def __init__ (self, n):
         self.n = n
         self.elements = [num for num in range(1, n)]
@@ -16,12 +18,14 @@ class PrimeCyclicGroupMult:
         self.primitives = self._find_primitives()
         self.subgroups = self._find_subgroups()
     
+    # finds the orders dictionary
     def orders (self):
         orders = dict()
         for i in self.elements:
             orders[i] = self.find_order(i)
         return orders
     
+    # Does modular exponentiation until we reach the identity element
     def find_order (self, a):
         if a not in self.elements:
             raise ValueError("Element not in group")
@@ -31,6 +35,7 @@ class PrimeCyclicGroupMult:
             count += 1
         return count
     
+    # Finds primitives by identifying which elements have order = len of the group
     def _find_primitives (self):
         primitives = []
         for i in self.elements:
@@ -38,6 +43,7 @@ class PrimeCyclicGroupMult:
                 primitives.append(i)
         return primitives
     
+    # FInds subgroups by grouping all orders
     def _find_subgroups (self):
         subgroups = {}
         subgroups[len(self.elements)] = self.elements
@@ -75,6 +81,7 @@ class PrimeCyclicGroupMult:
             count += 1
         return count
     
+    # Finds modular inverse Extended Euclidean
     def find_inverse (self, element):
         
         def extended_ea(x, y):
@@ -94,7 +101,8 @@ class PrimeCyclicGroupMult:
     def print_subgroups (self):
         for order, subgroup in self.subgroups.items():
             print(f"Subgroup of order {order}: {subgroup}")
-        
+
+# Diffie Hellman Implementation        
 class DiffieHellman:
     
     def __init__ (self, prime):
@@ -116,6 +124,7 @@ class DiffieHellman:
             raise ValueError("Numbers not in group")
         return pow(num1, private, self.prime)
         
+# Naive Elgamal Encryption
 class NaiveElgamalEncryption:
     
     def __init__ (self, prime):
@@ -169,6 +178,7 @@ class NaiveElgamalEncryption:
         else:
             return self.diffie_hellman.group.derive_new_element(ciphertext, self.diffie_hellman.group.find_inverse(self.shared_key2))
         
+# Standard Elgamal Encryption
 class ElgamalEncryption:
     
     def __init__ (self, prime):
@@ -222,6 +232,7 @@ class ElgamalEncryption:
         else:
             return self.group.derive_new_element(ciphertext, pow(self.public1, self.prime - self.private2 - 1, self.prime))
         
+# Elgamal Signature Scheme
 class ElgamalSignatureScheme:
     def __init__(self, prime):
         self.p = prime  # Prime number for the group
@@ -276,6 +287,7 @@ class ElgamalSignatureScheme:
             a, b = b, a % b
         return a
 
+# DSA Implementation 
 class DSA:
     
     def __init__ (self):

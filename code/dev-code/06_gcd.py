@@ -17,25 +17,15 @@ def extended_euclid(a, b):
         return gcd, x, y
     
 # Example usage
-# num1 = 987654321987654321
-# num2 = 123456789123456789
+num1 = 987654321987654321
+num2 = 123456789123456789
 
-# gcd_result = euclid_gcd(num1, num2)
-# print(f"The gcd of {num1} and {num2} is: {gcd_result}")
+gcd_result = euclid_gcd(num1, num2)
+print(f"The gcd of {num1} and {num2} is: {gcd_result}")
 
-# num1 = 987654321987654321
-# num2 = 123456789123456789
+num1 = 987654321987654321
+num2 = 123456789123456789
 
-# gcd_result, x, y = extended_euclid(num1, num2)
-# print(f"The gcd of {num1} and {num2} is: {gcd_result}")
-# print(f"The coefficients x and y are: x = {x}, y = {y}")
-
-r0 = 112
-r1 = 86
-
-print(extended_euclid(r0, r1))
-
-# Zp where p is prime. 
-# 1, 2, 3, 4, ..., p - 1
-# Find some k such that 2^k mod p = 1 => k
-# if k = p - 1 then that number is generator
+gcd_result, x, y = extended_euclid(num1, num2)
+print(f"The gcd of {num1} and {num2} is: {gcd_result}")
+print(f"The coefficients x and y are: x = {x}, y = {y}")

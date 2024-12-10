@@ -4,6 +4,7 @@
 
 from math import gcd
 
+# Runs an exhaustive search on the integer ring of Zm to find the modular inverse of a
 def modular_inverse (a, m):
     if gcd(a, m) != 1:
         raise ValueError(f"No Modular Inverse Exists for a={a} and m={m}")

@@ -3,6 +3,7 @@ import sympy
 from math import gcd
 from hashlib import sha256
 
+# Uses the ModularInverse class
 class ModularInverse:
     
     def __init__(self, a, m):
@@ -31,11 +32,13 @@ class ModularInverse:
             return None  # No inverse exists
         else:
             return s0 % self.m
+
+# Basic RSA implementation
 class BasicRSA:
     
     def __init__(self, bit_length=2048):
         self.bit_length = bit_length
-        self._generate_keys()
+        self._generate_keys() # Generates a key
         
     def _generate_keys(self):
         # Generate two distinct primes p and q
@@ -54,6 +57,7 @@ class BasicRSA:
         self.public_key = (e, self.n)
         self.private_key = (d, self.n)
         
+    # Fast Exponentiation using SAM
     def _square_and_multiply(self, x, h):
         def number_to_binary(number):
             return [int(b) for b in bin(number)[2:]]
@@ -71,11 +75,13 @@ class BasicRSA:
                 result = (result * x) % self.n
         return result
     
+    # Encrypt
     def encrypt(self, x):
         e, _ = self.public_key
         # RSA Encryption: c = m^e mod n
         return self._square_and_multiply(x, e)
     
+    # Decrypt
     def decrypt(self, y):
         d, _ = self.private_key
         # RSA Decryption: m = c^d mod n

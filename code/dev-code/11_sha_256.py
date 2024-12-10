@@ -1,6 +1,7 @@
 from hashlib import sha256
 from copy import deepcopy
 
+# This SHA256 Function applies a different CH, MA, ROTR and SHR function to the one in the textbook
 class SHA256:
     # Constants
     K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -78,7 +79,9 @@ class SHA256:
 sha = SHA256()
 hash_result = sha.compute("COMPSCI 4CR3")
 print(hash_result)
-# data = "COMPSCI 4CR3"
-# hash_object = sha256(data.encode())
-# hash_hex = hash_object.hexdigest()
-# print(hash_hex)
+
+# The sha256 function from hashlib shows the standard output
+data = "COMPSCI 4CR3"
+hash_object = sha256(data.encode())
+hash_hex = hash_object.hexdigest()
+print(hash_hex)

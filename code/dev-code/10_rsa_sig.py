@@ -6,6 +6,7 @@ import random
 import sympy
 from math import gcd
 
+# Uses Modular Inverse
 class ModularInverse:
     
     def __init__(self, a, m):
@@ -36,7 +37,7 @@ class ModularInverse:
         else:
             return s0 % self.m
 
-
+# RSA Signature Scheme based on the textbook
 class RSASigScheme:
     
     def __init__(self, bit_length=2048):
@@ -60,6 +61,7 @@ class RSASigScheme:
         self.public_key = (e, self.n)
         self.private_key = (d, self.n)
         
+    # Fast Modular Exponentiation
     def _square_and_multiply(self, x, h):
         def number_to_binary(number):
             return [int(b) for b in bin(number)[2:]]

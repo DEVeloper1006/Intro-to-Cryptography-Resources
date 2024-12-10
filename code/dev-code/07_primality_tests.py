@@ -4,6 +4,7 @@
 
 import sympy
 import random
+import math
 
 def fermat_primality_test(candidate, security):
     if candidate < 2:
@@ -14,8 +15,13 @@ def fermat_primality_test(candidate, security):
             return False
     return True
 
-def is_carmichael (candidate, security):
-    return fermat_primality_test(candidate, security) and not sympy.isprime(candidate)
+def is_carmichael (candidate):
+    
+    for a in range(candidate):
+        if math.gcd(a, candidate) == 1:
+            if pow(a, candidate - 1, candidate) == 1:
+                return True
+    return False
 
 def miller_rabin_primality_test (candidate, security):
     if candidate < 2:
@@ -38,9 +44,11 @@ def miller_rabin_primality_test (candidate, security):
             if z != candidate - 1:
                 return False
     return True
+
 n = 561  # Prime number example
 result = fermat_primality_test(n, 5)
 print(f"Is {n} prime? {result}")
+print(f"Is Carmichael? {is_carmichael(n)}")
 
 # Test a prime candidate
 candidate = 17

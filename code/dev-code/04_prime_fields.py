@@ -4,6 +4,7 @@
 
 import sympy
 
+#Uses the Modular Inverse code
 class ModularInverse:
     def __init__(self, a, m):
         self.a = a
@@ -33,6 +34,7 @@ class ModularInverse:
         else:
             return s0 % self.m
 
+#Implements normal Prime Fields
 class PrimeFields:
     
     def __init__(self, p):
@@ -41,22 +43,26 @@ class PrimeFields:
         self.p = p
         self.prime = True
     
+    # Normal Add
     def add (self, a, b):
         if a not in self.elements or b not in self.elements:
             return None
         return (a + b) % self.p
 
+    # Normal Multiply
     def multiply (self, a, b):
         if a not in self.elements or b not in self.elements:
             return None
         return (a * b) % self.p
     
+    # Optimized Inverse
     def optimized_inverse (self, a):
         if a not in self.elements:
             return None
         inverseFinder = ModularInverse(a, self.p)
         return inverseFinder.eea_mod_inverse()
     
+    # Exhaustive Inverse
     def inverse(self, a):
         if a not in self.elements or a == 0:
             return None
@@ -65,6 +71,7 @@ class PrimeFields:
                 return i
         return None
     
+    # Modular Division
     def divide (self, a, b):
         try:
             return self.multiply(a, self.inverse(b))

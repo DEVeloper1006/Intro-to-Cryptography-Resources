@@ -2,6 +2,7 @@
 #Date: December 3rd 2024
 #Description: This code implements the DES algorithm exactly as mentioned in the textbook
 
+# Permuted Choice 1 for Round Key Generation
 PC1 = [
     57, 49, 41, 33, 25, 17,  9,
      1, 58, 50, 42, 34, 26, 18,
@@ -13,6 +14,7 @@ PC1 = [
     21, 13,  5, 28, 20, 12,  4
 ]
 
+# Permuted Choice 2 for Round Key Generation
 PC2 = [
     14, 17, 11, 24,  1,  5,
      3, 28, 15,  6, 21, 10,
@@ -24,6 +26,7 @@ PC2 = [
     46, 42, 50, 36, 29, 32
 ]
 
+# Initial Permutation
 IP = [
     58, 50, 42, 34, 26, 18, 10,  2,
     60, 52, 44, 36, 28, 20, 12,  4,
@@ -35,6 +38,7 @@ IP = [
     63, 55, 47, 39, 31, 23, 15,  7
 ]
 
+# Inverse Initial Permutation
 FP = [
     40,  8, 48, 16, 56, 24, 64, 32,
     39,  7, 47, 15, 55, 23, 63, 31,
@@ -46,6 +50,7 @@ FP = [
     33,  1, 41,  9, 49, 17, 57, 25
 ]
 
+# Key Expansion
 E = [
     32,  1,  2,  3,  4,  5,
      4,  5,  6,  7,  8,  9,
@@ -57,6 +62,7 @@ E = [
     28, 29, 30, 31, 32,  1
 ]
 
+# Final Permutation for Round Key Generation
 P = [
     16,  7, 20, 21, 29, 12, 28, 17,
      1, 15, 23, 26,  5, 18, 31, 10,
@@ -64,6 +70,7 @@ P = [
     19, 13, 30,  6, 22, 11,  4, 25
 ]
 
+# S-Boxes after Key Expansion
 S_BOXES = [
     # S-Box 1
     [
@@ -123,15 +130,18 @@ S_BOXES = [
     ],
 ]
 
+# DES Class
 class DES:
     
     def __init__ (self, key):
         self.key = key
-        self.round_keys = self.generate_round_keys()
+        self.round_keys = self.generate_round_keys() # generates round keys
         
+    # Applied a permutation for any table given
     def _permute (self, block, table):
         return [block[i - 1] for i in table]
     
+    # Substitute a block into the S-Box
     def _s_box_substitution (self, block, s_boxes):
         output = []
         for i in range(8):
@@ -142,6 +152,7 @@ class DES:
             output.extend([int(b) for b in f"{value:04b}"])  # Convert to 4-bit binary
         return output
     
+    # Performs the fiestel function f
     def _feistel_function(self, right, round_key, s_boxes, p_table):
         # Step 1: Expansion
         expanded_right = self._permute(right, E)
@@ -156,6 +167,7 @@ class DES:
         final_output = self._permute(s_box_output, p_table)
         return final_output
     
+    # Function for encryption and decryption
     def _des_full(self, input_text, keys, s_boxes, p_table):
         # Step 1: Initial Permutation
         permuted_text = self._permute(input_text, IP)
@@ -176,6 +188,7 @@ class DES:
     
     def generate_round_keys(self):
         
+        # does Left Circular Shifts 
         def left_circular_shift(block, shifts):
             return block[shifts:] + block[:shifts]
         

@@ -1,3 +1,7 @@
+# Author: Dev Mody
+# Date: December 10th 2024
+# Description: Implements Extensive Field Addition, Multiplication and Reduction
+
 class GaloisField:
     def __init__(self, m, irreducible_poly : list):
         self.m = m
