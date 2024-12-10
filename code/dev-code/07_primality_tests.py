@@ -6,6 +6,7 @@ import sympy
 import random
 import math
 
+# Fermat's Primality Test
 def fermat_primality_test(candidate, security):
     if candidate < 2:
         return False
@@ -15,6 +16,7 @@ def fermat_primality_test(candidate, security):
             return False
     return True
 
+# Carmichael Number Tester
 def is_carmichael (candidate):
     
     for a in range(candidate):
@@ -23,6 +25,7 @@ def is_carmichael (candidate):
                 return True
     return False
 
+# Miller Rabin Primality Test
 def miller_rabin_primality_test (candidate, security):
     if candidate < 2:
         return False
@@ -45,6 +48,7 @@ def miller_rabin_primality_test (candidate, security):
                 return False
     return True
 
+# Test Cases
 n = 561  # Prime number example
 result = fermat_primality_test(n, 5)
 print(f"Is {n} prime? {result}")
