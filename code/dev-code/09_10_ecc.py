@@ -171,7 +171,9 @@ class EllipticCurveDSA:
         self.group = EllipticCurveGroup(p, a, b)
         p = p
         q = q
-        A = random.choice(self.group.primitives)
+        A = random.choice(self.group.points)
+        while self.group.orders[A] != q:
+            A = random.choice(self.group.points)
         d = random.randint(0, q)
         B = self.group.point_multiplication(A, d)
         self.public = (p, a, b, q, A, B)

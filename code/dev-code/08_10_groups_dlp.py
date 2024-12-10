@@ -293,7 +293,7 @@ class DSA:
     def __init__ (self):
         self.p, self.q = self._generate_large_primes()
         self.group = PrimeCyclicGroupMult(self.q)
-        self.alpha = random.choice(self.group.elements)
+        self.alpha = random.choice(self.group.subgroups[self.q])
         self.d = random.randint(0, self.q)
         self.beta = pow(self.alpha, self.d, self.p)
         self.public = (self.p, self.q, self.alpha, self.beta)
