@@ -104,7 +104,7 @@ class EllipticCurveGroup:
     def _find_orders(self):
         orders = {}
         for point in self.points:
-            count = 0
+            count = 1
             current = point
             while current != self.neutral:
                 count += 1
@@ -115,7 +115,7 @@ class EllipticCurveGroup:
     def _find_primitives (self):
         primitives = []
         for point in self.points:
-            if self.orders[point] + 1 == self.num_points:
+            if self.orders[point] == self.num_points:
                 primitives.append(point)
         return primitives
     
@@ -132,4 +132,6 @@ class EllipticCurveGroup:
         return count
 
 curve = EllipticCurveGroup(11, 1, 2)
+print(curve.orders)
 print(curve.orders[(8,4)])
+
