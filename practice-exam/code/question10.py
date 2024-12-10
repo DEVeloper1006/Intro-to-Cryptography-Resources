@@ -1,3 +1,6 @@
+import random, sympy, math
+from hashlib import sha256
+
 class PrimeCyclicGroupMult:
     
     def __init__ (self, n):
@@ -30,8 +33,8 @@ class PrimeCyclicGroupMult:
         return primitives
     
     def _find_subgroups (self):
-        subgroups = []
-        subgroups.append(self.elements)
+        subgroups = {}
+        subgroups[len(self.elements)] = self.elements
         marked = set()
         for order in self.orders.values():
             if order != len(self.elements) and order not in marked:
@@ -41,7 +44,7 @@ class PrimeCyclicGroupMult:
                         subgroup.append(i)
                 for primitive in self.primitives:
                     subgroup.append(primitive)
-                subgroups.append(subgroup)
+                subgroups[order] = subgroup
                 marked.add(order)
         return subgroups
                 
@@ -81,22 +84,13 @@ class PrimeCyclicGroupMult:
         if gcd != 1:
             raise ValueError(f"No inverse exists for {element} modulo {self.n}")
         return x % self.n
-    
-p = 2089
-q = 29
 
-group = PrimeCyclicGroupMult(p)
-item_list = []
-for elem, order in group.orders.items():
-    if order == q:
-        item_list.append(elem)
+    def print_subgroups (self):
+        for order, subgroup in self.subgroups.items():
+            print(f"Subgroup of order {order}: {subgroup}")
+            
+candidates = [602, 746, 780, 94]
+group = PrimeCyclicGroupMult(953)
 
-candidates = [774, 1762, 1189, 512]
-verified = set()
-for alpha in item_list:
-    for d in range(q):
-        beta = pow(alpha, d, p)
-        if beta in candidates:
-            verified.add(pow(alpha, d, p))
-
-print(verified)
+for candidate in candidates:
+    print("Candidate is a Generator:", group.is_generator(candidate))

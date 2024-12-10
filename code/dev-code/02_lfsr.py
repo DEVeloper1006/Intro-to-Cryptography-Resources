@@ -73,12 +73,12 @@ def decrypt(ciphertext, key_stream):
     if len(ciphertext) != len(key_stream): raise ValueError("ERROR.")
     return [ciphertext[i] ^ key_stream[i] for i in range(len(ciphertext))]
 
-# coefficients = [1, 1, 0, 0, 1]
-# initial_seed = [0, 1, 0, 1, 1]
-# initial_seed.reverse()
+coefficients = [1, 1, 0, 0, 1]
+initial_seed = [0, 1, 0, 1, 1]
+initial_seed.reverse()
 
-coefficients = [1, 0, 1]
-initial_seed = [1, 0, 0]
+# coefficients = [1, 0, 1]
+# initial_seed = [1, 0, 0]
 
 lfsr = StreamCipherLFSR(coefficients, initial_seed)
 key_stream = lfsr.generate_key_stream(5)

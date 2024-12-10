@@ -1,3 +1,5 @@
+import sympy
+
 def part_a ():
     print("Key Generation")
     p = 59
@@ -9,13 +11,13 @@ def part_a ():
     print("Signing Process")
     h_x = 17
     k_e = 25
-    k_e_inv = pow(k_e, -1, q)
+    k_e_inv = sympy.mod_inverse(k_e, q)
     print("K_E Inverse:", k_e_inv)
     r = pow(alpha, k_e, p) % q
     s = ((h_x + d * r) * k_e_inv) % q
     print("Output:", h_x, (r, s))
     print("Verification Process")
-    w = pow(s, -1, q)
+    w = sympy.mod_inverse(s, q)
     print("W:", w)
     u1 = (h_x * w) % q
     u2 = (r * w) % q
@@ -36,13 +38,13 @@ def part_b ():
     print("Signing Process")
     h_x = 2
     k_e = 13
-    k_e_inv = pow(k_e, -1, q)
+    k_e_inv = sympy.mod_inverse(k_e, q)
     print("K_E Inverse:", k_e_inv)
     r = pow(alpha, k_e, p) % q
     s = ((h_x + d * r) * k_e_inv) % q
     print("Output:", h_x, (r, s))
     print("Verification Process")
-    w = pow(s, -1, q)
+    w = sympy.mod_inverse(s, q)
     print("W:", w)
     u1 = (h_x * w) % q
     u2 = (r * w) % q
