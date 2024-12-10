@@ -50,6 +50,7 @@ COMPSCI4CR3-OpenBook-Resources/
 ├── /practice-exam/
 ├── /assignments/    # assignment and solutions
 ├── /lecture-slides/
+├── /author-slides/
 ├── CONTRIBUTING.md  # Guidelines for contributing
 └── README.md        # This file
 ```
