@@ -1,0 +1,173 @@
+Stream Ciphers
+    - Chapter 2
+
+OTP 
+    - Chapter 2.2.2
+
+    - Symmetric Stream
+
+LFSR 
+    - Chapter 2.3.1
+
+    - Symmetric Stream
+
+DES 
+    - Chapter 3
+    
+    - Symmetrical Block
+
+    - Triple DES
+        - Chapter 3.7.2
+
+AES
+    - Chapter 4
+
+    - Symmetrical Block
+
+RSA
+    - Chapter 7.2
+
+    - Asymmetric
+        - RSA Signature
+            - Chapter 10.2
+        - RSA Encryption
+            - Chapter 7.2
+
+DLP
+    - Chapter 8
+
+    - Asymmetric
+
+    - Diffe-Hellman Key Exchange
+        - Chapter 8.1
+
+    - DLP and Prime Fields
+        - Chapter 8.3.1
+
+    - Elgamal Encryption
+        - Chapter 8.5 (Naive)
+        - Chapter 8.5.2 (Better Version)
+
+DSA
+    - Chapter 10
+
+    - Elgamal Digital Signature
+        - Chapter 10.3
+
+    - Digital Signature Algorithm
+        - Chapter 10.4
+
+Elliptic Curves
+    - Chapter 9
+
+    - Elliptic Curve Diffie-Hellman Key Exchange
+        - Chapter 9.3
+    
+    - ECDLP
+        - Chapter 9.2
+
+    - Elliptic Curve Digital Signature Algorithm (ECDSA) [Optional]
+        - Chapter 10.5
+
+Hash
+    - Chapter 11
+
+    - Security Requirements
+        - Chapter 11.2
+
+    - Collision Resistance and Birthday Attack
+        - Chapter 11.2.3
+
+    - Hash Functions from Block Ciphers
+        - Chapter 11.3.1
+
+    - Sha
+        - Chapter 11.3.2
+
+    - Sha-2
+        - Chapter 11.4
+
+MATHEMATICS STUFF
+    - Galois Fields
+        - Chapter 4.3
+
+    - Euler's Phi Function (totient)
+        - Chapter 6.3.3
+
+    - Fermat's Little Theorem and Euler's Theorem
+        - Chapter 6.3.4
+
+    - How Common Are Primes?
+        - Chapter 7.6.1
+
+    - Groups
+        - Chapter 8.2
+
+    - Hasse's Theorem
+        - Chapter 9.2.2
+
+ALGORITHMS
+    - Euclidean Algorithm
+        - Chapter 6.3.1
+
+    - Extended Euclidean Algorithm
+        - Chapter 6.3.2
+
+    - Square-and-Multiply Algorithm
+        - Chapter 7.4
+
+    - Primality Tests
+        - Chapter 7.6.2
+
+    - Elliptic Curve Point Addition and Point Doubling
+        - Chapter 9.1.2
+
+    - Double-and-Add Algorithm for Point Multiplication
+        - Chapter 9.2
+    
+Attacks and Security
+    - Known-Plaintext Attack Against Single LFSRs
+        - Chapter 2.3.2
+
+    - DES 
+        - Exhaustive Key Search
+            - Chapter 3.5.1
+
+        - Analytical Attack
+            - Chapter 3.5.2
+
+    - Key Lengths and Security Levels
+        - Chapter 6.2.4
+
+    - RSA
+        - Attacks
+            - Chapter 7.9
+
+        - Digital Signature Security
+            - Chapter 10.2.3
+
+    - DLP
+        - Attacks Against Discrete Logarithm Problem
+            - Chapter 8.3.3
+
+    - DHKE
+        - Chapter 8.4
+
+    - Elgamal
+        - Chapter 8.5.4
+
+        - Elgamal Digital Signature
+            - Chapter 10.3.3
+
+    - Elliptic Curve 
+        - Diffie-Hellman Key Exchange
+            - Chapter 9.4
+
+        - Digital Signature
+            - Chapter 10.5.3
+
+    - DSA
+        - Chapter 10.1.3
+
+        - Security
+            - Chapter 10.4.3

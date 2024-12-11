@@ -250,5 +250,3 @@ des = DES(key)
 ciphertext = des.encrypt(plaintext)
 decrypted_text = des.decrypt(ciphertext)
 print("Decryption Successful:", decrypted_text == plaintext)  # Should print: True
-
-                        

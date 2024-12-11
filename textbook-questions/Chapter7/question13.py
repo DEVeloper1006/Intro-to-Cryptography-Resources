@@ -32,9 +32,11 @@ ciphertexts = [2514, 1125, 333, 3696, 2514, 2929, 3368, 2514]
 n, e = (3763, 11)
 
 factors = list(sympy.factorint(n).keys())
+print(factors)
 phi_n = 1
 for factor in factors:
     phi_n *= (factor - 1)
+print(phi_n == sympy.totient(n))
 d = ModularInverse(e, phi_n).eea_mod_inverse()
 
 ord_values = []
