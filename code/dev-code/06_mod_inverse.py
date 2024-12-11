@@ -47,3 +47,5 @@ if euler_inverse is not None and eea_inverse == euler_inverse:
     print(euler_inverse == 455849832448654918145271645198762680484609121155948527718155116360107376403525283213075123888664381192832794777034012202625978250778619258394374862217)
 else:
     print(f"{a} has no modular inverse modulo {m}")
+    
+print(ModularInverse(13, 39).eea_mod_inverse())
